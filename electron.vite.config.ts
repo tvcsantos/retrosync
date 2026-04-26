@@ -7,7 +7,7 @@ export default defineConfig({
   main: {
     build: {
       externalizeDeps: {
-        exclude: ['apicalypse', 'parse-torrent', 'fuse.js']
+        exclude: ['apicalypse', 'fuse.js']
       }
     }
   },

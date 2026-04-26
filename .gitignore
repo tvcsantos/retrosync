@@ -4,7 +4,7 @@ out
 .DS_Store
 .eslintcache
 *.log*
-addons/
+/addons/
 *.tsbuildinfo
 docs/.vitepress/cache
 docs/.vitepress/dist
