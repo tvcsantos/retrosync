@@ -258,7 +258,7 @@ class ImportManager {
     // Check if we still have a paused handle for this import
     const transfer = this.activeTransfers.get(importId)
     if (transfer?.paused) {
-      // Direct resume - handle and torrent are still alive
+      // Direct resume - handle and import record are still alive
       transfer.handle.resume()
       transfer.paused = false
 

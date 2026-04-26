@@ -142,7 +142,7 @@ If you modify the database schema:
 
    ```bash
    npm run db:generate                  # Main app
-   npm run db:generate:minerva          # Minerva addon
+   npm run db:generate:<addon-name>     # Addon migration
    ```
 
 3. Review the generated SQL in `resources/migrations/` (or `addons/<name>/migrations/`)

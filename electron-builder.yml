@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: retrosync
+productName: RetroSync
 directories:
   buildResources: build
 files:
@@ -23,7 +23,9 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
+  identity: null
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
     - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
