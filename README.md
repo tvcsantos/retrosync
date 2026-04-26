@@ -14,8 +14,8 @@ A desktop app for managing retro game ROM libraries. Search games via IGDB, disc
 ## Quick Start
 
 ```bash
-git clone https://github.com/tvcsantos/romio.git
-cd romio
+git clone https://github.com/tvcsantos/retrosync.git
+cd retrosync
 npm install
 npm run dev
 ```

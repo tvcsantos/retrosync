@@ -60,7 +60,7 @@ export default function AboutPage(): React.JSX.Element {
         {/* ── Links / credits ──────────────────────── */}
         <div className="flex flex-col items-center gap-4 pb-8">
           <a
-            href="https://github.com/tvcsantos/romio"
+            href="https://github.com/tvcsantos/retrosync"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-1.5 text-xs text-rs-accent hover:underline"

@@ -9,8 +9,8 @@
 ## Setup
 
 ```bash
-git clone https://github.com/tvcsantos/romio.git
-cd romio
+git clone https://github.com/tvcsantos/retrosync.git
+cd retrosync
 npm install
 npm run dev
 ```
@@ -19,8 +19,8 @@ This starts the Electron app in development mode with hot module replacement for
 
 ## Project Structure
 
-```
-romio/
+```text
+retrosync/
 ├── src/
 │   ├── main/                   # Electron main process
 │   │   ├── index.ts            # App entry, window creation, IPC handlers
@@ -71,19 +71,19 @@ romio/
 
 ## Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start in development mode with HMR |
-| `npm run build` | Typecheck + build for production |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Run Prettier on all files |
-| `npm run typecheck` | Run both TypeScript checks |
-| `npm run typecheck:node` | Typecheck main + preload |
-| `npm run typecheck:web` | Typecheck renderer |
-| `npm run db:generate` | Generate main database migrations |
-| `npm run build:mac` | Build macOS DMG |
-| `npm run build:win` | Build Windows installer |
-| `npm run build:linux` | Build Linux packages |
+| Script                   | Description                        |
+| ------------------------ | ---------------------------------- |
+| `npm run dev`            | Start in development mode with HMR |
+| `npm run build`          | Typecheck + build for production   |
+| `npm run lint`           | Run ESLint                         |
+| `npm run format`         | Run Prettier on all files          |
+| `npm run typecheck`      | Run both TypeScript checks         |
+| `npm run typecheck:node` | Typecheck main + preload           |
+| `npm run typecheck:web`  | Typecheck renderer                 |
+| `npm run db:generate`    | Generate main database migrations  |
+| `npm run build:mac`      | Build macOS DMG                    |
+| `npm run build:win`      | Build Windows installer            |
+| `npm run build:linux`    | Build Linux packages               |
 
 ## Code Style
 
@@ -139,10 +139,12 @@ If you modify the database schema:
 
 1. Edit the schema file (`src/main/db/schema.ts` or addon schema)
 2. Generate a migration:
+
    ```bash
    npm run db:generate                  # Main app
    npm run db:generate:minerva          # Minerva addon
    ```
+
 3. Review the generated SQL in `resources/migrations/` (or `addons/<name>/migrations/`)
 4. Test the migration by running the app fresh
 

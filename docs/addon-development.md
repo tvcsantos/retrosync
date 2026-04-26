@@ -6,11 +6,11 @@ This guide covers everything you need to build an external addon for RetroSync.
 
 Addons extend RetroSync with new capabilities. Each addon declares one or more capabilities in its manifest:
 
-| Capability | Description |
-|-----------|-------------|
-| `sources:games` | Discover and provide ROM sources for games |
-| `sources:bios` | Provide BIOS/firmware file sources |
-| `metadata` | Provide additional game metadata (reserved for future use) |
+| Capability      | Description                                                |
+| --------------- | ---------------------------------------------------------- |
+| `sources:games` | Discover and provide ROM sources for games                 |
+| `sources:bios`  | Provide BIOS/firmware file sources                         |
+| `metadata`      | Provide additional game metadata (reserved for future use) |
 
 A single addon can declare multiple capabilities.
 
@@ -18,7 +18,7 @@ A single addon can declare multiple capabilities.
 
 An addon is a directory containing at minimum:
 
-```
+```text
 my-addon/
 ├── manifest.json     # Addon metadata and capabilities
 ├── index.js          # Entry point (CommonJS module)
@@ -57,6 +57,7 @@ The `manifest.json` file describes the addon:
 **Required fields:** `id`, `name`, `version`, `author`, `description`, `capabilities`
 
 **Optional fields:**
+
 - `main` — Entry point filename (default: `index.js`)
 - `icon` — Icon filename
 - `homepage` — URL to addon homepage
@@ -87,7 +88,7 @@ module.exports.default = function createMyAddon(context) {
 
     async init() {
       log.info('My addon initialized')
-    },
+    }
 
     // ... implement capability methods
   }
@@ -174,10 +175,7 @@ Implement these methods to provide ROM sources:
 ```typescript
 interface SourceMethods {
   /** Search for sources matching a game name and platform IDs. */
-  findSources(
-    gameName: string,
-    platformIds: number[]
-  ): Promise<SourceSearchResult>
+  findSources(gameName: string, platformIds: number[]): Promise<SourceSearchResult>
 
   /** Build or refresh the source index. */
   buildIndex(platformIds?: number[]): Promise<{ indexed: number; total: number }>
@@ -222,7 +220,7 @@ interface SourceResult {
   region: string | null
   collection: string
   platformId: number
-  sourceRef: string        // Opaque string your addon can decode in createTransfer
+  sourceRef: string // Opaque string your addon can decode in createTransfer
 }
 ```
 
@@ -297,7 +295,7 @@ interface BiosMethods {
 interface BiosPlatformGroup {
   addonId: string
   platformId: number
-  system: string            // e.g., "PlayStation", "PlayStation 2"
+  system: string // e.g., "PlayStation", "PlayStation 2"
   platformName: string
   sources: BiosSourceEntry[]
 }
@@ -370,17 +368,14 @@ await build({
   target: 'node18',
   format: 'cjs',
   outfile: 'index.js',
-  external: [
-    'better-sqlite3',
-    'electron',
-    'electron-log'
-  ],
+  external: ['better-sqlite3', 'electron', 'electron-log'],
   sourcemap: false,
   minify: false
 })
 ```
 
 **Key points:**
+
 - Bundle format must be `cjs` (CommonJS)
 - Externalize host-provided native modules (`better-sqlite3`, `electron`, `electron-log`)
 - Use `hostImport()` for other host dependencies instead of bundling them
@@ -413,14 +408,15 @@ await build({
 
 Users install addons by placing the addon directory in:
 
-```
+```text
 {userData}/addons/{addon-id}/
 ```
 
 Where `{userData}` is:
-- **macOS:** `~/Library/Application Support/romio/`
-- **Windows:** `%APPDATA%/romio/`
-- **Linux:** `~/.config/romio/`
+
+- **macOS:** `~/Library/Application Support/retrosync/`
+- **Windows:** `%APPDATA%/retrosync/`
+- **Linux:** `~/.config/retrosync/`
 
 The addon must contain at least `manifest.json` and the entry point file.
 
@@ -435,16 +431,16 @@ RetroSync also supports installing addons from the UI via the Addons page, which
 
 ## API Quick Reference
 
-| Method | When to implement |
-|--------|------------------|
-| `init()` | Always — run migrations, set up state |
-| `destroy()` | If you hold resources (network connections, timers) |
-| `findSources(gameName, platformIds)` | `sources:games` capability |
-| `buildIndex(platformIds?)` | `sources:games` — if you index sources upfront |
-| `getStatus()` | `sources:games` — report index status |
-| `clearData()` | `sources:games` — wipe indexed data |
-| `getCacheSize()` | `sources:games` — report disk usage |
+| Method                                              | When to implement                                        |
+| --------------------------------------------------- | -------------------------------------------------------- |
+| `init()`                                            | Always — run migrations, set up state                    |
+| `destroy()`                                         | If you hold resources (network connections, timers)      |
+| `findSources(gameName, platformIds)`                | `sources:games` capability                               |
+| `buildIndex(platformIds?)`                          | `sources:games` — if you index sources upfront           |
+| `getStatus()`                                       | `sources:games` — report index status                    |
+| `clearData()`                                       | `sources:games` — wipe indexed data                      |
+| `getCacheSize()`                                    | `sources:games` — report disk usage                      |
 | `createTransfer(sourceRef, stagingPath, callbacks)` | `sources:games` or `sources:bios` — required for imports |
-| `resumeTransfer(sourceRef, stagingPath, callbacks)` | Optional — if your transfer supports resume |
-| `listBiosSources()` | `sources:bios` capability |
-| `onConfigChanged(old, new)` | If you need to react to config changes |
+| `resumeTransfer(sourceRef, stagingPath, callbacks)` | Optional — if your transfer supports resume              |
+| `listBiosSources()`                                 | `sources:bios` capability                                |
+| `onConfigChanged(old, new)`                         | If you need to react to config changes                   |
