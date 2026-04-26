@@ -89,8 +89,8 @@ retrosync/
 
 ### General
 
-- **TypeScript** throughout — no `any` types (enforced by ESLint)
-- **Prettier** for formatting — run `npm run format` before committing
+- **TypeScript** throughout - no `any` types (enforced by ESLint)
+- **Prettier** for formatting - run `npm run format` before committing
 - Unused variables/parameters prefixed with `_` (e.g., `_platformIds`)
 - Prefer `const` over `let`; avoid `var`
 - No default exports for components (except page-level components)
@@ -98,9 +98,9 @@ retrosync/
 ### React
 
 - Functional components only
-- Zustand for state — no `useContext` for global state
+- Zustand for state - no `useContext` for global state
 - Headless UI for accessible interactive primitives
-- Tailwind utility classes — no CSS modules or styled-components
+- Tailwind utility classes - no CSS modules or styled-components
 
 ### Electron
 

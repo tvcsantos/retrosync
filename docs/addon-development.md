@@ -58,11 +58,11 @@ The `manifest.json` file describes the addon:
 
 **Optional fields:**
 
-- `main` — Entry point filename (default: `index.js`)
-- `icon` — Icon filename
-- `homepage` — URL to addon homepage
-- `configSchema` — Array of config fields exposed in the UI
-- `minAppVersion` — Minimum compatible RetroSync version
+- `main` - Entry point filename (default: `index.js`)
+- `icon` - Icon filename
+- `homepage` - URL to addon homepage
+- `configSchema` - Array of config fields exposed in the UI
+- `minAppVersion` - Minimum compatible RetroSync version
 
 **Config field types:** `select`, `multi-select`, `number`, `path`, `text`
 
@@ -138,8 +138,8 @@ interface AddonContext {
 
 You get two database handles:
 
-- **`context.db`** (Drizzle ORM) — Use for queries against your own tables. Define your schema with Drizzle and use the full query builder.
-- **`context.sqlite`** (better-sqlite3) — Use for DDL operations like `CREATE TABLE` and `CREATE INDEX`. Also useful for raw SQL when Drizzle is overkill.
+- **`context.db`** (Drizzle ORM) - Use for queries against your own tables. Define your schema with Drizzle and use the full query builder.
+- **`context.sqlite`** (better-sqlite3) - Use for DDL operations like `CREATE TABLE` and `CREATE INDEX`. Also useful for raw SQL when Drizzle is overkill.
 
 **Important:** Namespace your tables to avoid collisions. Use your addon ID as a prefix (e.g., `myaddon_sources`).
 
@@ -424,23 +424,23 @@ RetroSync also supports installing addons from the UI via the Addons page, which
 
 ## Debugging
 
-- Use `context.log` for all logging — it's scoped to your addon ID and integrates with the app's log system
+- Use `context.log` for all logging - it's scoped to your addon ID and integrates with the app's log system
 - Log files are written to `{userData}/logs/`
 - During development, run the host app with `npm run dev` and place your built addon in the addons directory
-- Use `context.dataDir` for any cache or temporary files — it's guaranteed to exist and is writable
+- Use `context.dataDir` for any cache or temporary files - it's guaranteed to exist and is writable
 
 ## API Quick Reference
 
 | Method                                              | When to implement                                        |
 | --------------------------------------------------- | -------------------------------------------------------- |
-| `init()`                                            | Always — run migrations, set up state                    |
+| `init()`                                            | Always - run migrations, set up state                    |
 | `destroy()`                                         | If you hold resources (network connections, timers)      |
 | `findSources(gameName, platformIds)`                | `sources:games` capability                               |
-| `buildIndex(platformIds?)`                          | `sources:games` — if you index sources upfront           |
-| `getStatus()`                                       | `sources:games` — report index status                    |
-| `clearData()`                                       | `sources:games` — wipe indexed data                      |
-| `getCacheSize()`                                    | `sources:games` — report disk usage                      |
-| `createTransfer(sourceRef, stagingPath, callbacks)` | `sources:games` or `sources:bios` — required for imports |
-| `resumeTransfer(sourceRef, stagingPath, callbacks)` | Optional — if your transfer supports resume              |
+| `buildIndex(platformIds?)`                          | `sources:games` - if you index sources upfront           |
+| `getStatus()`                                       | `sources:games` - report index status                    |
+| `clearData()`                                       | `sources:games` - wipe indexed data                      |
+| `getCacheSize()`                                    | `sources:games` - report disk usage                      |
+| `createTransfer(sourceRef, stagingPath, callbacks)` | `sources:games` or `sources:bios` - required for imports |
+| `resumeTransfer(sourceRef, stagingPath, callbacks)` | Optional - if your transfer supports resume              |
 | `listBiosSources()`                                 | `sources:bios` capability                                |
 | `onConfigChanged(old, new)`                         | If you need to react to config changes                   |

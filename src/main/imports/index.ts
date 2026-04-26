@@ -88,7 +88,7 @@ export function registerImportIpcHandlers(): void {
       if (existsSync(record.savePath)) {
         shell.showItemInFolder(record.savePath)
       } else {
-        // File not on disk yet — open the parent directory instead
+        // File not on disk yet - open the parent directory instead
         const dir = dirname(record.savePath)
         ipcLog.info('imports:open-folder → file missing, opening dir:', dir)
         if (existsSync(dir)) {

@@ -261,7 +261,7 @@ function CustomDeviceModal({
                       {isChecked && <Check size={10} className="text-white" strokeWidth={3} />}
                     </div>
                     <span className="truncate">
-                      {p.shortName} — {p.name}
+                      {p.shortName} - {p.name}
                     </span>
                   </button>
                 )

@@ -38,14 +38,14 @@ export default function GameTypeFilterDropdown({
   // Commit on close: detect open → false transition
   const handleOpenChange = (open: boolean): void => {
     if (prevOpenRef.current && !open) {
-      // Popover just closed — commit if changed
+      // Popover just closed - commit if changed
       const storeSet = new Set(excludedGameTypes)
       if (!setsEqual(localExcluded, storeSet)) {
         setExcludedGameTypes(Array.from(localExcluded))
       }
     }
     if (!prevOpenRef.current && open) {
-      // Popover just opened — snapshot store into local
+      // Popover just opened - snapshot store into local
       setLocalExcluded(new Set(excludedGameTypes))
     }
     prevOpenRef.current = open

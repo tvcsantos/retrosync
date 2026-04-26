@@ -16,7 +16,7 @@ export default function AboutPage(): React.JSX.Element {
 
           <p className="mt-6 max-w-md text-sm leading-relaxed text-rs-text-secondary">
             RetroSync is your retro gaming companion. Browse, organize, and manage your game library
-            across platforms — all from a single, clean interface. Extend functionality with
+            across platforms - all from a single, clean interface. Extend functionality with
             community add-ons tailored to your needs.
           </p>
         </div>

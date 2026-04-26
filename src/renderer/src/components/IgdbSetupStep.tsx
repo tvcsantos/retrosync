@@ -214,7 +214,7 @@ export default function IgdbSetupStep({
             onClick={handleSkip}
             className="text-xs text-rs-text-secondary hover:text-rs-text transition-colors"
           >
-            Skip for now — I&apos;ll set this up later
+            Skip for now - I&apos;ll set this up later
           </button>
         )}
       </div>

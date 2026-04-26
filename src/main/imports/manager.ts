@@ -220,11 +220,11 @@ class ImportManager {
     if (!transfer) return
 
     if (transfer.handle.supportsPause) {
-      // Real pause — keep the handle alive so we can resume directly
+      // Real pause - keep the handle alive so we can resume directly
       transfer.handle.pause()
       transfer.paused = true
     } else {
-      // No pause support — cancel and discard the handle
+      // No pause support - cancel and discard the handle
       transfer.handle.cancel()
       this.activeTransfers.delete(importId)
     }
@@ -258,7 +258,7 @@ class ImportManager {
     // Check if we still have a paused handle for this import
     const transfer = this.activeTransfers.get(importId)
     if (transfer?.paused) {
-      // Direct resume — handle and torrent are still alive
+      // Direct resume - handle and torrent are still alive
       transfer.handle.resume()
       transfer.paused = false
 
@@ -281,7 +281,7 @@ class ImportManager {
       return
     }
 
-    // No handle — re-queue for a fresh start
+    // No handle - re-queue for a fresh start
     db.update(importsTable)
       .set({ status: 'queued', error: null })
       .where(eq(importsTable.id, importId))
@@ -605,7 +605,7 @@ class ImportManager {
       .all().length
 
     if (activeCount > 0) {
-      dlLog.info('Import cleanup skipped — active imports exist:', activeCount)
+      dlLog.info('Import cleanup skipped - active imports exist:', activeCount)
       return
     }
 

@@ -15,7 +15,7 @@ export default function GameCard({ game, onClick }: GameCardProps): React.JSX.El
       onClick={() => onClick(game)}
       className="group w-[150px] shrink-0 cursor-pointer rounded-lg bg-rs-panel text-left transition-transform duration-200 ease-out hover:scale-105 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rs-accent"
     >
-      {/* Box art wrapper — 3:4 portrait ratio to match game cover art */}
+      {/* Box art wrapper - 3:4 portrait ratio to match game cover art */}
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg">
         <img
           src={game.boxArtUrl}

@@ -240,7 +240,7 @@ export default function PlatformSetupPage(): React.JSX.Element {
             return next
           }
         }
-        // New import appeared — reload full list
+        // New import appeared - reload full list
         window.api.imports.list().then((list) => {
           const fresh = new Map<string, ImportInfo>()
           for (const dl of list) {

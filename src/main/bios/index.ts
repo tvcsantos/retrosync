@@ -74,7 +74,7 @@ export function scanLocalBios(): LocalBiosStatus[] {
           }
         }
       } catch {
-        // Dir exists but unreadable — skip
+        // Dir exists but unreadable - skip
       }
     }
 

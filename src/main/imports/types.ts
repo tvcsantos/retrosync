@@ -5,7 +5,7 @@ export type ImportStatus = 'queued' | 'importing' | 'paused' | 'completed' | 'er
 export interface ImportRecord {
   id: string
   addonId: string
-  /** Opaque source reference — interpreted only by the addon. */
+  /** Opaque source reference - interpreted only by the addon. */
   sourceRef: string | null
   romFilename: string
   gameName: string | null
@@ -23,7 +23,7 @@ export interface ImportRecord {
 
 export interface StartImportParams {
   addonId: string
-  /** Opaque source reference — passed back to addon's createTransfer(). */
+  /** Opaque source reference - passed back to addon's createTransfer(). */
   sourceRef: string
   romFilename: string
   gameName: string

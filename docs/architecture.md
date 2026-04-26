@@ -49,14 +49,14 @@ The main process owns all I/O: database access, filesystem operations, network r
 
 **Key modules:**
 
-- `index.ts` — App lifecycle, window creation, IPC handler registration
-- `config.ts` — JSON config file management with deep-merge updates
-- `igdb.ts` — IGDB OAuth2 authentication, game search, metadata fetching, image caching
-- `platforms.ts` — Device profiles, platform definitions, active platform ID resolution
-- `db/` — SQLite setup (WAL mode), Drizzle schema, migrations
-- `addons/` — Addon registry, loader, context, IPC, type contracts
-- `imports/` — Import queue manager, transfer lifecycle, staging/library file placement
-- `bios/` — BIOS source aggregation, local scanning, installation
+- `index.ts` - App lifecycle, window creation, IPC handler registration
+- `config.ts` - JSON config file management with deep-merge updates
+- `igdb.ts` - IGDB OAuth2 authentication, game search, metadata fetching, image caching
+- `platforms.ts` - Device profiles, platform definitions, active platform ID resolution
+- `db/` - SQLite setup (WAL mode), Drizzle schema, migrations
+- `addons/` - Addon registry, loader, context, IPC, type contracts
+- `imports/` - Import queue manager, transfer lifecycle, staging/library file placement
+- `bios/` - BIOS source aggregation, local scanning, installation
 
 ### Preload (`src/preload/`)
 
@@ -64,14 +64,14 @@ A thin bridge that exposes a typed `window.api` object to the renderer using Ele
 
 ### Renderer (`src/renderer/`)
 
-A React 19 SPA with Zustand for state management. The renderer never accesses the filesystem or database directly — all data flows through `window.api.*` IPC calls.
+A React 19 SPA with Zustand for state management. The renderer never accesses the filesystem or database directly - all data flows through `window.api.*` IPC calls.
 
 **Key parts:**
 
-- `store/useAppStore.ts` — Single Zustand store for all application state
-- `pages/` — Top-level views (Dashboard, Library, Imports, Platform Setup, Addons, Settings, About)
-- `components/` — Reusable UI (GameCard, GameDetailPanel, HeroBanner, Sidebar, etc.)
-- `types/` — Shared renderer-side type definitions
+- `store/useAppStore.ts` - Single Zustand store for all application state
+- `pages/` - Top-level views (Dashboard, Library, Imports, Platform Setup, Addons, Settings, About)
+- `components/` - Reusable UI (GameCard, GameDetailPanel, HeroBanner, Sidebar, etc.)
+- `types/` - Shared renderer-side type definitions
 
 ## Design Decisions
 
@@ -105,7 +105,7 @@ This was chosen over separate databases because addon queries often correlate wi
 Zustand was chosen for minimal boilerplate and simplicity:
 
 - No providers or wrappers needed
-- Selectors are plain functions — fine-grained re-renders
+- Selectors are plain functions - fine-grained re-renders
 - Works naturally with React 19's concurrent features
 - Single store file keeps all state co-located and easy to trace
 
@@ -113,7 +113,7 @@ The store (`useAppStore.ts`) contains all application state: navigation, search,
 
 ### Why an addon system?
 
-ROM sources vary widely — local folders, archive CDNs, community databases — and each has different discovery, indexing, and transfer mechanisms. Rather than hardcoding source types, RetroSync uses an addon architecture where each source is a self-contained plugin.
+ROM sources vary widely - local folders, archive CDNs, community databases - and each has different discovery, indexing, and transfer mechanisms. Rather than hardcoding source types, RetroSync uses an addon architecture where each source is a self-contained plugin.
 
 **Design principles:**
 
@@ -194,7 +194,7 @@ Key behaviors:
 
 ### Main Application
 
-**`library_games`** — User's saved game collection
+**`library_games`** - User's saved game collection
 
 | Column                                      | Type         | Description          |
 | ------------------------------------------- | ------------ | -------------------- |
@@ -207,7 +207,7 @@ Key behaviors:
 | `igdb_game_type`                            | integer      | Game type category   |
 | `added_at`                                  | text         | Timestamp            |
 
-**`imports`** — Import queue and history
+**`imports`** - Import queue and history
 
 | Column                        | Type      | Description                                     |
 | ----------------------------- | --------- | ----------------------------------------------- |
@@ -271,4 +271,4 @@ The union of all selected device platform IDs determines which games and sources
 - Addons run in the same Node.js process as the main app (no sandboxing)
 - Addon installation requires explicit user action
 - The preload script exposes only whitelisted IPC channels via `contextBridge`
-- No remote code execution — addons are loaded from local disk only
+- No remote code execution - addons are loaded from local disk only

@@ -21,7 +21,7 @@ features:
   - title: Import Manager
     details: Queued imports with progress tracking, pause/resume, and concurrent transfers.
   - title: Device Profiles
-    details: Pre-configured profiles for popular handhelds — Miyoo Mini, Anbernic, Steam Deck, and more.
+    details: Pre-configured profiles for popular handhelds - Miyoo Mini, Anbernic, Steam Deck, and more.
   - title: Library Management
     details: Organize ROMs by platform with automatic file placement.
   - title: BIOS Management

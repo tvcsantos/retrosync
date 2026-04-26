@@ -71,7 +71,7 @@ export default function ImportsPage(): React.JSX.Element {
       setImports((prev) => {
         const idx = prev.findIndex((d) => d.id === data.id)
         if (idx === -1) {
-          // New import appeared — reload full list
+          // New import appeared - reload full list
           window.api.imports.list().then(setImports)
           return prev
         }
