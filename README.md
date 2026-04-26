@@ -1,3 +1,9 @@
+<!-- markdownlint-disable MD041 -->
+
+![retrosync](docs/assets/images/retrosync.png)
+
+<!-- markdownlint-enable MD041 -->
+
 # RetroSync
 
 A desktop app for managing retro game ROM libraries. Search games via IGDB, discover ROMs through extensible addon sources, and organize your collection by platform and device.
