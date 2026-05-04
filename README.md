@@ -17,6 +17,12 @@ A desktop app for managing retro game ROM libraries. Search games via IGDB, disc
 - **Library Management** - Organize ROMs by platform with automatic file placement
 - **BIOS Management** - Organize BIOS files and install firmware files for each platform
 
+## Showcase
+
+![Home Page](docs/assets/images/01-home-page.png)
+
+![Game Details](docs/assets/images/02-game-details.png)
+
 ## Quick Start
 
 ```bash
