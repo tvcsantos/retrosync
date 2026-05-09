@@ -10,7 +10,7 @@ import { existsSync, readdirSync, readFileSync, statSync, mkdirSync } from 'fs'
 import log from 'electron-log/main'
 import type { Addon, AddonManifest, AddonCapability } from './types'
 import type { AddonContext, AddonFactory } from './context'
-import { getDb, getSqlite } from '../db'
+import { getDb } from '../db'
 import { getConfig } from '../config'
 import { getActivePlatformIds } from '../platforms'
 import { addonRegistry } from './registry'
@@ -81,7 +81,6 @@ export function buildContext(addonId: string, addonDir: string, dataDir: string)
   const addonLog = log.scope(`addon:${addonId}`)
   return {
     db: getDb() as unknown as AddonContext['db'],
-    sqlite: getSqlite(),
     getAddonConfig: () => addonRegistry.getAddonConfig(addonId),
     getActivePlatformIds: () => getActivePlatformIds(getConfig()),
     addonDir,

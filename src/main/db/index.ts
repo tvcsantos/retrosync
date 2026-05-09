@@ -37,11 +37,4 @@ export function getDb(): ReturnType<typeof drizzle<typeof schema>> {
   return db
 }
 
-/** Return the raw better-sqlite3 Database instance (for addon DDL). */
-export function getSqlite(): InstanceType<typeof Database> {
-  if (!sqliteInstance) {
-    // Ensure the DB has been initialised
-    getDb()
-  }
-  return sqliteInstance!
-}
+

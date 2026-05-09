@@ -27,21 +27,7 @@ The app is built with **Electron** (main + renderer processes), **React 19** for
 
 ## Process Architecture
 
-```text
-┌──────────────────────────────────────────────────┐
-│                    Electron                       │
-│                                                   │
-│  ┌─────────────┐   IPC Bridge   ┌──────────────┐ │
-│  │ Main Process │◄─────────────►│   Renderer    │ │
-│  │              │  (preload.ts)  │   (React)     │ │
-│  │  - Addons    │               │  - Pages      │ │
-│  │  - Database  │               │  - Components │ │
-│  │  - Imports   │               │  - Store      │ │
-│  │  - IGDB API  │               │               │ │
-│  │  - Config    │               │               │ │
-│  └─────────────┘               └──────────────┘  │
-└──────────────────────────────────────────────────┘
-```
+![Process Architecture](./diagrams/process-architecture.svg)
 
 ### Main Process (`src/main/`)
 
@@ -57,6 +43,8 @@ The main process owns all I/O: database access, filesystem operations, network r
 - `addons/` - Addon registry, loader, context, IPC, type contracts
 - `imports/` - Import queue manager, transfer lifecycle, staging/library file placement
 - `bios/` - BIOS source aggregation, local scanning, installation
+- `library.ts` - Library management (add/remove games, collection queries)
+- `imageCache.ts` - IGDB cover image caching and serving
 
 ### Preload (`src/preload/`)
 
@@ -77,7 +65,7 @@ A React 19 SPA with Zustand for state management. The renderer never accesses th
 
 ### Why SQLite over Electron Store / JSON files?
 
-The app needs to query indexed ROM metadata (tens of thousands of entries from addon indexes), track import status, and store library games with relational lookups. SQLite with WAL mode gives us:
+The app needs to query indexed ROM metadata (tens of thousands of entries from addon indexes), track import status, and store library games with relational lookups. SQLite with WAL (Write-Ahead Logging) mode gives us:
 
 - Fast reads without blocking writes
 - Proper indexing for search queries
@@ -92,11 +80,11 @@ Addons get a Drizzle ORM instance and raw SQLite handle through their context. T
 
 **Trade-offs:**
 
-- (+) Single file to backup/migrate
-- (+) Addons can use Drizzle's full query builder
-- (+) No inter-process database coordination
-- (-) Addons must namespace their tables to avoid collisions
-- (-) A misbehaving addon could theoretically corrupt shared data
+- ✅ Single file to backup/migrate
+- ✅ Addons can use Drizzle's full query builder
+- ✅ No inter-process database coordination
+- ❌ Addons must namespace their tables to avoid collisions
+- ❌ A misbehaving addon could theoretically corrupt shared data
 
 This was chosen over separate databases because addon queries often correlate with app data (e.g., checking import status for a source), and a single WAL-mode database handles concurrent access well.
 
@@ -127,8 +115,18 @@ ROM sources vary widely - local folders, archive CDNs, community databases - and
 The app uses a dark theme with retro gaming aesthetics. Tailwind's utility classes keep styling co-located with components. Custom CSS variables (`--color-rs-accent`, `--color-rs-panel`, etc.) define the design system:
 
 ```css
---color-rs-bg: #0f0f0f --color-rs-panel: #1a1a1a --color-rs-accent: #6366f1 /* Indigo */
-  --color-rs-text: #f3f4f6 --color-rs-border: #2a2a2a;
+--color-rs-bg: #0f0f0f;
+--color-rs-panel: #1a1a1a;
+--color-rs-panel-light: #242424;
+--color-rs-accent: #6366f1; /* Indigo */
+--color-rs-accent-hover: #818cf8;
+--color-rs-text: #f3f4f6;
+--color-rs-text-secondary: #9ca3af;
+--color-rs-danger: #ef4444;
+--color-rs-success: #22c55e;
+--color-rs-warning: #f59e0b;
+--color-rs-sidebar: #141414;
+--color-rs-border: #2a2a2a;
 ```
 
 This approach allows potential theming in the future by swapping CSS variable values.
@@ -137,51 +135,13 @@ This approach allows potential theming in the future by swapping CSS variable va
 
 ### Game Discovery & Import
 
-```text
-User searches game
-       │
-       ▼
-Renderer ──IPC──► Main (IGDB API) ──► Returns game metadata
-       │
-       ▼
-User opens game detail panel
-       │
-       ▼
-Renderer ──IPC──► Main (Addon Registry)
-                    │
-                    ├──► Addon A: findSources(gameName, platformIds)
-                    ├──► Addon B: findSources(gameName, platformIds)
-                    └──► ... (parallel)
-                    │
-                    ▼
-              Aggregated results returned to renderer
-       │
-       ▼
-User clicks Import on a source
-       │
-       ▼
-Renderer ──IPC──► Import Manager
-                    │
-                    ├── Creates staging directory
-                    ├── Calls addon.createTransfer(sourceRef, stagingPath, callbacks)
-                    ├── Tracks progress via callbacks
-                    ├── On completion: moves file to library/{platform}/
-                    └── Broadcasts progress events to renderer
-```
+![Game Discovery & Import](./diagrams/game-discovery-import.svg)
 
 ### Import Queue
 
 The import manager maintains a concurrency-limited queue (default: 3 concurrent transfers). Imports go through these states:
 
-```text
-queued ──► importing ──► completed
-  │            │
-  │            ├──► paused ──► importing (resume)
-  │            │
-  │            └──► error ──► importing (retry)
-  │
-  └──► cancelled (removed)
-```
+![Import Queue States](./diagrams/import-queue.svg)
 
 Key behaviors:
 
@@ -194,31 +154,7 @@ Key behaviors:
 
 ### Main Application
 
-**`library_games`** - User's saved game collection
-
-| Column                                      | Type         | Description          |
-| ------------------------------------------- | ------------ | -------------------- |
-| `igdb_id`                                   | integer (PK) | IGDB game identifier |
-| `title`                                     | text         | Game title           |
-| `platforms`                                 | text (JSON)  | Full platform names  |
-| `cover_image_id`                            | text         | IGDB cover image ID  |
-| `year`, `developer`, `genre`, `description` | text         | Metadata             |
-| `rating`                                    | real         | User rating (0-5)    |
-| `igdb_game_type`                            | integer      | Game type category   |
-| `added_at`                                  | text         | Timestamp            |
-
-**`imports`** - Import queue and history
-
-| Column                        | Type      | Description                                     |
-| ----------------------------- | --------- | ----------------------------------------------- |
-| `id`                          | text (PK) | UUID                                            |
-| `addon_id`                    | text      | Source addon                                    |
-| `source_ref`                  | text      | Addon-specific source reference                 |
-| `rom_filename`                | text      | Target filename                                 |
-| `status`                      | text      | queued / importing / paused / completed / error |
-| `progress`                    | real      | 0.0 to 1.0                                      |
-| `total_size`, `imported_size` | integer   | Bytes                                           |
-| `save_path`                   | text      | Final library path                              |
+![Database Schema](./diagrams/db-schema.svg)
 
 ### Addon Tables
 
@@ -254,14 +190,14 @@ interface AppConfig {
 
 ## Platform & Device System
 
-RetroSync supports 35 retro platforms (NES, SNES, N64, PS1, PS2, Dreamcast, etc.) and ships with 11 pre-configured device profiles (Miyoo Mini Plus, Anbernic RG35XX, Steam Deck, etc.).
+RetroSync supports 32 retro platforms (NES, SNES, N64, PS1, PS2, Dreamcast, etc.) and ships with 11 pre-configured device profiles (Miyoo Mini Plus, Anbernic RG35XX, Steam Deck, etc.).
 
 Each device profile maps to a set of IGDB platform IDs it can emulate, organized by performance tiers:
 
-- **Tier 1** (lightweight): NES, SNES, Game Boy, Master System, etc.
-- **Tier 2** (moderate): GBA, Mega Drive, Neo Geo, TurboGrafx, etc.
-- **Tier 3** (demanding): PS1, N64, Nintendo DS
-- **Tier 4** (heavy): PS2, GameCube, Dreamcast, Wii, 3DS
+- **Tier 1** (lightweight): GB, GBC, NES, SMS, Game Gear, Lynx, Atari 2600/7800, NGP, NGPC, WonderSwan
+- **Tier 2** (moderate): SNES, SFC, Mega Drive, GBA, 32X, Sega CD, PC Engine, Neo Geo AES/MVS/CD
+- **Tier 3** (demanding): PS1, N64, Nintendo DS, PSP
+- **Tier 4** (heavy): Dreamcast, Saturn, GameCube, PS2, Wii, 3DS, Jaguar
 
 The union of all selected device platform IDs determines which games and sources are relevant to the user. This is exposed to addons via `context.getActivePlatformIds()`.
 

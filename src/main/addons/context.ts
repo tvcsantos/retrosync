@@ -3,7 +3,6 @@
 // controlled access to the app's database, config, and logging.
 
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core'
-import type Database from 'better-sqlite3'
 
 /**
  * Context provided to an addon's factory function.
@@ -12,9 +11,6 @@ import type Database from 'better-sqlite3'
 export interface AddonContext {
   /** Drizzle ORM instance for querying the app's shared database. */
   db: BaseSQLiteDatabase<'sync', unknown>
-
-  /** Raw better-sqlite3 instance for DDL (CREATE TABLE, indexes, etc.). */
-  sqlite: Database.Database
 
   /** Read this addon's config section from `addons.config.{addonId}`. */
   getAddonConfig(): Record<string, unknown>

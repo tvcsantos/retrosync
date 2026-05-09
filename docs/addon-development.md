@@ -63,8 +63,9 @@ The `manifest.json` file describes the addon:
 - `homepage` - URL to addon homepage
 - `configSchema` - Array of config fields exposed in the UI
 - `minAppVersion` - Minimum compatible RetroSync version
+- `maxConcurrentTransfers` - Max parallel transfers this addon can handle (default: no per-addon limit)
 
-**Config field types:** `select`, `multi-select`, `number`, `path`, `text`
+**Config field types:** `boolean`, `select`, `multi-select`, `number`, `path`
 
 ### Entry Point
 
@@ -73,7 +74,7 @@ The entry point must export a factory function that receives a context object an
 ```javascript
 // index.js (CommonJS)
 module.exports.default = function createMyAddon(context) {
-  const { db, sqlite, log } = context
+  const { db, log } = context
 
   return {
     manifest: {
@@ -95,7 +96,8 @@ module.exports.default = function createMyAddon(context) {
 }
 ```
 
-> **Note:** The loader overwrites `addon.manifest` with the parsed `manifest.json` from disk, so the inline manifest is only used as a type reference.
+> [!NOTE]
+> The loader overwrites `addon.manifest` with the parsed `manifest.json` from disk, so the inline manifest is only used as a type reference.
 
 ## Context API
 
@@ -105,9 +107,6 @@ The context object provides controlled access to the host app's infrastructure:
 interface AddonContext {
   /** Drizzle ORM instance for type-safe queries. */
   db: BaseSQLiteDatabase<'sync', unknown>
-
-  /** Raw better-sqlite3 handle for DDL (CREATE TABLE, etc.). */
-  sqlite: Database.Database
 
   /** Read this addon's config section. */
   getAddonConfig(): Record<string, unknown>
@@ -136,12 +135,10 @@ interface AddonContext {
 
 ### Database Access
 
-You get two database handles:
+**`context.db`** is a Drizzle ORM instance you can use for queries against your own tables. Define your schema with Drizzle and use the full query builder.
 
-- **`context.db`** (Drizzle ORM) - Use for queries against your own tables. Define your schema with Drizzle and use the full query builder.
-- **`context.sqlite`** (better-sqlite3) - Use for DDL operations like `CREATE TABLE` and `CREATE INDEX`. Also useful for raw SQL when Drizzle is overkill.
-
-**Important:** Namespace your tables to avoid collisions. Use your addon ID as a prefix (e.g., `myaddon_sources`).
+> [!IMPORTANT]
+> Namespace your tables to avoid collisions. Use your addon ID as a prefix (e.g., `myaddon_sources`).
 
 ### Migrations
 
@@ -231,8 +228,14 @@ The `sourceRef` is an opaque string that your addon creates and later decodes in
 The transfer contract is the core integration point between addons and the import manager:
 
 ```typescript
+interface TransferProgress {
+  importedSize: number // Bytes transferred so far
+  totalSize: number // Total size in bytes (0 if unknown)
+  speed: number // Transfer speed in bytes/sec (0 if unknown)
+}
+
 interface TransferCallbacks {
-  onProgress(progress: number, importedSize: number, totalSize: number): void
+  onProgress(data: TransferProgress): void
   onComplete(): void
   onError(error: Error): void
 }
@@ -263,8 +266,8 @@ createTransfer(sourceRef, stagingPath, callbacks) {
   // Start async import
   importFile(sourceRef, stagingPath, {
     signal: controller.signal,
-    onProgress: (imported, total) => {
-      callbacks.onProgress(imported / total, imported, total)
+    onProgress: (imported, total, speed) => {
+      callbacks.onProgress({ importedSize: imported, totalSize: total, speed })
     }
   })
     .then(() => callbacks.onComplete())

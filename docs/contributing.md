@@ -27,10 +27,13 @@ retrosync/
 │   │   ├── config.ts           # JSON config management
 │   │   ├── igdb.ts             # IGDB API integration
 │   │   ├── platforms.ts        # Device profiles & platform definitions
+│   │   ├── library.ts          # Library management (add/remove games)
+│   │   ├── imageCache.ts       # IGDB cover image caching
 │   │   ├── db/                 # Database setup & schema
 │   │   │   ├── index.ts        # SQLite initialization (WAL mode)
 │   │   │   └── schema.ts       # Drizzle table definitions
 │   │   ├── addons/             # Addon system
+│   │   │   ├── index.ts        # Barrel exports
 │   │   │   ├── types.ts        # Addon interface contracts
 │   │   │   ├── context.ts      # Context passed to addon factories
 │   │   │   ├── loader.ts       # Dynamic addon loading from disk
@@ -55,7 +58,7 @@ retrosync/
 │   └── preload/                # Electron preload (IPC bridge)
 │       ├── index.ts            # contextBridge API
 │       └── index.d.ts          # Type declarations for window.api
-├── addons/                     # External addon packages
+├── addons/                     # External addon packages (gitignored, runtime only)
 ├── resources/
 │   └── migrations/             # Main database migrations
 ├── build/                      # Build assets (icons, entitlements)
@@ -71,19 +74,24 @@ retrosync/
 
 ## Scripts
 
-| Script                   | Description                        |
-| ------------------------ | ---------------------------------- |
-| `npm run dev`            | Start in development mode with HMR |
-| `npm run build`          | Typecheck + build for production   |
-| `npm run lint`           | Run ESLint                         |
-| `npm run format`         | Run Prettier on all files          |
-| `npm run typecheck`      | Run both TypeScript checks         |
-| `npm run typecheck:node` | Typecheck main + preload           |
-| `npm run typecheck:web`  | Typecheck renderer                 |
-| `npm run db:generate`    | Generate main database migrations  |
-| `npm run build:mac`      | Build macOS DMG                    |
-| `npm run build:win`      | Build Windows installer            |
-| `npm run build:linux`    | Build Linux packages               |
+| Script                   | Description                                                 |
+| ------------------------ | ----------------------------------------------------------- |
+| `npm run dev`            | Start in development mode with HMR (Hot Module Replacement) |
+| `npm run build`          | Typecheck + build for production                            |
+| `npm run start`          | Preview the production build                                |
+| `npm run lint`           | Run ESLint                                                  |
+| `npm run format`         | Run Prettier on all files                                   |
+| `npm run typecheck`      | Run both TypeScript checks                                  |
+| `npm run typecheck:node` | Typecheck main + preload                                    |
+| `npm run typecheck:web`  | Typecheck renderer                                          |
+| `npm run db:generate`    | Generate main database migrations                           |
+| `npm run build:mac`      | Build macOS DMG                                             |
+| `npm run build:win`      | Build Windows installer                                     |
+| `npm run build:linux`    | Build Linux packages                                        |
+| `npm run build:unpack`   | Build + unpack (no installer)                               |
+| `npm run docs:dev`       | Start VitePress dev server                                  |
+| `npm run docs:build`     | Build the documentation site                                |
+| `npm run docs:preview`   | Preview the built documentation site                        |
 
 ## Code Style
 
@@ -93,7 +101,7 @@ retrosync/
 - **Prettier** for formatting - run `npm run format` before committing
 - Unused variables/parameters prefixed with `_` (e.g., `_platformIds`)
 - Prefer `const` over `let`; avoid `var`
-- No default exports for components (except page-level components)
+- Default exports for React components (one component per file)
 
 ### React
 
@@ -126,27 +134,28 @@ npm run lint          # Zero errors, zero warnings
 npm run typecheck     # Both node and web configs pass
 ```
 
-For addon changes, also run:
+For addon changes, run the addon's own typecheck in its repository:
 
 ```bash
-cd addons/<addon-name>
-npx tsc --noEmit      # Addon typecheck
+cd path/to/<addon-name>
+npm run typecheck
 ```
 
 ## Database Changes
 
 If you modify the database schema:
 
-1. Edit the schema file (`src/main/db/schema.ts` or addon schema)
+1. Edit the schema file (`src/main/db/schema.ts`)
 2. Generate a migration:
 
    ```bash
-   npm run db:generate                  # Main app
-   npm run db:generate:<addon-name>     # Addon migration
+   npm run db:generate
    ```
 
-3. Review the generated SQL in `resources/migrations/` (or `addons/<name>/migrations/`)
+3. Review the generated SQL in `resources/migrations/`
 4. Test the migration by running the app fresh
+
+External addons manage their own migrations independently in their own repositories.
 
 ## Adding a New Page
 
