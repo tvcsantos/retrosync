@@ -27,7 +27,8 @@ export default withMermaid(
       nav: [
         { text: 'Guide', link: '/architecture' },
         { text: 'Addon Dev', link: '/addon-development' },
-        { text: 'Contributing', link: '/contributing' }
+        { text: 'Contributing', link: '/contributing' },
+        { text: 'Changelog', link: '/changelog' }
       ],
       sidebar: [
         {
@@ -41,6 +42,10 @@ export default withMermaid(
         {
           text: 'Addons',
           items: [{ text: 'Addon Development', link: '/addon-development' }]
+        },
+        {
+          text: 'Project',
+          items: [{ text: 'Changelog', link: '/changelog' }]
         }
       ],
       socialLinks: [{ icon: 'github', link: 'https://github.com/tvcsantos/retrosync' }],
