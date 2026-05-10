@@ -36,5 +36,3 @@ export function getDb(): ReturnType<typeof drizzle<typeof schema>> {
   dbLog.info('Database ready')
   return db
 }
-
-

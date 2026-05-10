@@ -368,7 +368,7 @@ await build({
   entryPoints: ['src/index.ts'],
   bundle: true,
   platform: 'node',
-  target: 'node18',
+  target: 'node24',
   format: 'cjs',
   outfile: 'index.js',
   external: ['better-sqlite3', 'electron', 'electron-log'],

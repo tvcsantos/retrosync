@@ -6,7 +6,9 @@ import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
 import eslintPluginReactRefresh from 'eslint-plugin-react-refresh'
 
 export default defineConfig(
-  { ignores: ['**/node_modules', '**/dist', '**/out', 'addons/*/index.js'] },
+  {
+    ignores: ['**/node_modules', '**/dist', '**/out', 'addons/*/index.js', 'docs/.vitepress/cache']
+  },
   tseslint.configs.recommended,
   eslintPluginReact.configs.flat.recommended,
   eslintPluginReact.configs.flat['jsx-runtime'],
