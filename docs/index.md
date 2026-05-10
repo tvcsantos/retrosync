@@ -6,7 +6,7 @@ hero:
   text: Retro Game ROM Manager
   tagline: Search games via IGDB, discover ROMs through extensible addons, and organize your collection by platform and device.
   image:
-    src: assets/images/image.png
+    src: /assets/images/image.png
     alt: RetroSync
   actions:
     - theme: brand
