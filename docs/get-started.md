@@ -43,6 +43,19 @@ Configure your devices, manage addons, set library paths, and customize the app 
 
 <DownloadCards />
 
+> [!IMPORTANT]
+> **macOS: "RetroSync is damaged and can't be opened"**
+>
+> Because the app is not yet notarized with Apple, macOS Gatekeeper may block it after download.
+>
+> To fix this, open **Terminal** and run:
+>
+> ```sh
+> xattr -cr /Applications/RetroSync.app
+> ```
+>
+> Then open the app normally. You only need to do this once.
+
 ### System Requirements
 
 - **macOS** 12+ (Monterey or later)
