@@ -6,6 +6,10 @@
 
 # RetroSync
 
+[![GitHub Release](https://img.shields.io/github/v/release/tvcsantos/retrosync?style=flat&label=Latest%20Release)](https://github.com/tvcsantos/retrosync/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/tvcsantos/retrosync/total?style=flat&label=Downloads)](https://github.com/tvcsantos/retrosync/releases/latest)
+[![License](https://img.shields.io/github/license/tvcsantos/retrosync?style=flat)](LICENSE)
+
 A desktop app for managing retro game ROM libraries. Search games via IGDB, discover ROMs through extensible addon sources, and organize your collection by platform and device.
 
 ## Features
@@ -16,6 +20,10 @@ A desktop app for managing retro game ROM libraries. Search games via IGDB, disc
 - **Device Profiles** - Pre-configured profiles for popular handhelds (Miyoo Mini, Anbernic, Steam Deck, etc.)
 - **Library Management** - Organize ROMs by platform with automatic file placement
 - **BIOS Management** - Organize BIOS files and install firmware files for each platform
+
+## Download
+
+Download the latest release for your platform from the [Releases page](https://github.com/tvcsantos/retrosync/releases/latest), or visit the [Get Started](https://tvcsantos.github.io/retrosync/get-started) guide for per-platform download cards and setup instructions.
 
 ## Showcase
 

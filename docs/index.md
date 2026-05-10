@@ -11,7 +11,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /architecture
+      link: /get-started
     - theme: alt
       text: Build an Addon
       link: /addon-development

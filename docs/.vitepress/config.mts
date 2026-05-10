@@ -25,7 +25,8 @@ export default withMermaid(
     },
     themeConfig: {
       nav: [
-        { text: 'Guide', link: '/architecture' },
+        { text: 'Get Started', link: '/get-started' },
+        { text: 'Architecture', link: '/architecture' },
         { text: 'Addon Dev', link: '/addon-development' },
         { text: 'Contributing', link: '/contributing' },
         { text: 'Changelog', link: '/changelog' }
@@ -35,6 +36,7 @@ export default withMermaid(
           text: 'Guide',
           items: [
             { text: 'Introduction', link: '/' },
+            { text: 'Get Started', link: '/get-started' },
             { text: 'Architecture', link: '/architecture' },
             { text: 'Contributing', link: '/contributing' }
           ]
