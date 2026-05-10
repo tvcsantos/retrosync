@@ -14,18 +14,18 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            build-cmd: npm run build:linux
+            build-cmd: npm run build:linux -- --publish never
             name: Linux
           - os: windows-latest
-            build-cmd: npm run build:win
+            build-cmd: npm run build:win -- --publish never
             name: Windows
           - os: macos-latest
             arch: arm64
-            build-cmd: npm run build:mac -- --arm64
+            build-cmd: npm run build:mac -- --arm64 --publish never
             name: macOS (ARM)
           - os: macos-latest
             arch: x64
-            build-cmd: npm run build:mac -- --x64
+            build-cmd: npm run build:mac -- --x64 --publish never
             name: macOS (x64)
 
     runs-on: ${{ matrix.os }}
@@ -47,6 +47,8 @@ jobs:
 
       - name: Build and package
         run: ${{ matrix.build-cmd }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
@@ -61,6 +63,7 @@ jobs:
           if-no-files-found: ignore
 
   publish:
+    name: Publish
     needs: release
     runs-on: ubuntu-latest
     steps:
