@@ -224,6 +224,9 @@ interface SourceResult {
 
 The `sourceRef` is an opaque string that your addon creates and later decodes in `createTransfer()`. It should encode everything needed to locate and import the file (e.g., a URL, a torrent+filename pair, or a local path).
 
+> [!NOTE]
+> The host automatically deduplicates each addon's source results by `sourceRef` before displaying them. If the same physical file is indexed under multiple platform IDs (e.g., SNES and Super Famicom sharing the same torrent), only the first occurrence is kept. Addons do not need to implement their own deduplication.
+
 #### Transfer Contract
 
 The transfer contract is the core integration point between addons and the import manager:

@@ -20,6 +20,22 @@ import { exists } from '../fs-utils'
 
 const regLog = log.scope('addon-registry')
 
+/**
+ * Deduplicate a SourceSearchResult's sources by sourceRef.
+ * Platforms that share the same underlying files (e.g. SNES/SFC both map to
+ * the same torrent) can produce identical entries differing only in platformId.
+ * Keeping only the first occurrence per sourceRef eliminates these duplicates.
+ */
+function deduplicateSearchResult(result: SourceSearchResult): SourceSearchResult {
+  const seen = new Set<string>()
+  const sources = result.sources.filter((s) => {
+    if (seen.has(s.sourceRef)) return false
+    seen.add(s.sourceRef)
+    return true
+  })
+  return { ...result, sources }
+}
+
 /** Count total files in a directory tree. */
 async function countFiles(dir: string): Promise<number> {
   let count = 0
@@ -277,6 +293,9 @@ class AddonRegistry {
   /**
    * Query all enabled source addons for a game, in parallel.
    * Returns results tagged by addon ID.
+   * Each addon's results are deduplicated by sourceRef so that platforms
+   * sharing the same torrent files (e.g. SNES/SFC, Neo Geo AES/MVS) don't
+   * produce duplicate entries for the same physical ROM.
    */
   async findSources(
     gameName: string,
@@ -291,7 +310,7 @@ class AddonRegistry {
         return {
           addonId: addon.manifest.id,
           addonName: addon.manifest.name,
-          results
+          results: deduplicateSearchResult(results)
         }
       })
     )
