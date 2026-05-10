@@ -6,7 +6,9 @@ import { useRoute, inBrowser } from 'vitepress'
 // @ts-expect-error -- lightbox3 types don't cover the style.css export
 import 'lightbox3/style.css'
 import { Lightbox } from 'lightbox3'
+// @ts-expect-error -- no type declarations for the Vue component export
 import CopyOrDownloadAsMarkdownButtons from 'vitepress-plugin-llms/vitepress-components/CopyOrDownloadAsMarkdownButtons.vue'
+// @ts-expect-error -- CSS side-effect import handled by Vite
 import './custom.css'
 
 export default {
