@@ -41,20 +41,22 @@ Configure your devices, manage addons, set library paths, and customize the app 
 
 ## Download
 
+> [!IMPORTANT]
+> For macOS users, please read the [installation instructions](#installing-on-macos) below to avoid Gatekeeper issues after downloading.
+
 <DownloadCards />
 
 ### Installing on macOS
 
-> [!IMPORTANT]
-> **"RetroSync is damaged and can't be opened"**
->
-> Because the app is not yet notarized with Apple, macOS Gatekeeper may block it after download. To fix this, open **Terminal** and run:
->
-> ```sh
-> xattr -cr /Applications/RetroSync.app
-> ```
->
-> Then open the app normally. You only need to do this once.
+#### DMG
+
+After downloading and installing the DMG, macOS Gatekeeper may show a **"RetroSync is damaged and can't be opened"** error because the app is not yet notarized with Apple. To fix this, open **Terminal** and run:
+
+```sh
+xattr -cr /Applications/RetroSync.app
+```
+
+Then open the app normally. You only need to do this once.
 
 #### Homebrew
 
