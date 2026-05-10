@@ -7,6 +7,7 @@ export default withMermaid(
     base: process.env.BASE_URL || '/',
     title: 'RetroSync',
     description: 'A desktop app for managing retro game ROM libraries',
+    head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
     vite: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       plugins: [llmstxt() as any]
