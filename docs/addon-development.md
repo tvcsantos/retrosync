@@ -418,7 +418,9 @@ RetroSync supports installing addons from the Addons page. Click **Install Addon
 - A **`.zip` file** containing the addon (recommended for distribution)
 - An **addon folder** containing `manifest.json`
 
-The app validates the manifest, shows a confirmation dialog, and copies the addon into the addons directory. ZIP files are automatically extracted — both flat zips (manifest at root) and zips with a single wrapper directory are supported.
+For ZIP files a **"Preparing Add-on"** overlay shows real-time progress while the archive is extracted and validated. After extraction the app displays a confirmation dialog with the addon's metadata and a disclaimer. Once confirmed, a progress bar tracks the file copy phase. The installation can be **cancelled at any time** — partially copied files are cleaned up automatically.
+
+ZIP files are automatically extracted — both flat zips (manifest at root) and zips with a single wrapper directory are supported.
 
 ### Distributing as a ZIP
 

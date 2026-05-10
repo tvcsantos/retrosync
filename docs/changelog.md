@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - IGDB integration for game search with metadata, cover art, and platform info
 - Extensible addon system with capability-based architecture (`sources:games`, `sources:bios`, `metadata`)
-- ZIP-based addon installation from the UI with async extraction
+- ZIP-based addon installation from the UI with async extraction, real-time progress reporting, and cancellation support
 - Built-in local folder addon for discovering ROMs from local directories
 - Import manager with queued imports, progress tracking, pause/resume, and concurrent transfers
 - Library management with automatic file placement organized by platform
