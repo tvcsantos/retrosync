@@ -247,32 +247,33 @@ onMounted(async () => {
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  transition: opacity 0.25s;
+  transition: background-color 0.25s, color 0.25s, border-color 0.25s;
 }
 
 .dl-btn:hover {
-  opacity: 0.85;
+  text-decoration: none;
 }
 
 .dl-btn-primary {
-  background: var(--vp-c-brand-1);
-  color: #fff;
+  background: var(--vp-button-brand-bg);
+  color: var(--vp-button-brand-text);
 }
 
 .dl-btn-primary:hover {
-  color: #fff;
+  background: var(--vp-button-brand-hover-bg);
+  color: var(--vp-button-brand-hover-text);
 }
 
 .dl-btn-secondary {
-  background: var(--vp-c-bg-mute);
-  color: var(--vp-c-text-1);
-  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-button-alt-bg);
+  color: var(--vp-button-alt-text);
+  border: 1px solid var(--vp-button-alt-border, transparent);
 }
 
 .dl-btn-secondary:hover {
-  color: var(--vp-c-text-1);
-  border-color: var(--vp-c-brand-1);
-  background: var(--vp-c-bg-soft);
+  background: var(--vp-button-alt-hover-bg);
+  color: var(--vp-button-alt-hover-text);
+  border-color: var(--vp-button-alt-hover-border, transparent);
 }
 
 .dl-version {
