@@ -395,14 +395,14 @@ await build({
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.0"
+    "drizzle-orm": "^0.45.2"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0",
-    "typescript": "^5.8.0",
-    "better-sqlite3": "^12.0.0",
-    "@types/better-sqlite3": "^7.6.0",
-    "@types/node": "^22.0.0"
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.3",
+    "better-sqlite3": "^12.9.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.12.3"
   }
 }
 ```
