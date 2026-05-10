@@ -33,8 +33,13 @@ let pendingTempDir: string | null = null
  * Handles both flat zips (manifest at root) and zips with a single wrapper
  * directory.
  */
-async function extractAddonZip(zipPath: string): Promise<string> {
+async function extractAddonZip(
+  zipPath: string,
+  onProgress?: (phase: string, percent: number) => void
+): Promise<string> {
+  onProgress?.('Reading ZIP archive...', 0)
   const zip = new AdmZip(zipPath)
+  onProgress?.('Extracting files...', 10)
   const tempDir = join(tmpdir(), `retrosync-addon-${randomUUID()}`)
   // extractAllToAsync returns a Promise when called without a callback,
   // but @types/adm-zip types the return as void.
@@ -196,9 +201,8 @@ export function registerAddonIpcHandlers(): void {
       const info = await stat(selectedPath)
       if (info.isFile() && selectedPath.toLowerCase().endsWith('.zip')) {
         ipcLog.info('addon:install → extracting zip')
-        sendInstallProgress('Extracting addon...', 0)
-        addonPath = await extractAddonZip(selectedPath)
-        sendInstallProgress('Validating addon...', 30)
+        addonPath = await extractAddonZip(selectedPath, sendInstallProgress)
+        sendInstallProgress('Validating addon...', 25)
         // Track the temp root so we can clean up later (addonPath may be a
         // nested subdirectory inside the temp dir)
         const tempRoot = addonPath.startsWith(tmpdir()) ? addonPath : null

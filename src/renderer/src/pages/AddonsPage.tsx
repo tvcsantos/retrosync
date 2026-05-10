@@ -61,6 +61,7 @@ export default function AddonsPage(): React.JSX.Element {
     manifest: AddonManifest
     sourcePath: string
   } | null>(null)
+  const [preparing, setPreparing] = useState(false)
   const [installing, setInstalling] = useState(false)
   const [installProgress, setInstallProgress] = useState<{
     phase: string
@@ -115,9 +116,20 @@ export default function AddonsPage(): React.JSX.Element {
   }
 
   const handleInstall = async (): Promise<void> => {
-    const result = await window.api.addons.install()
-    if (result.ok && result.data) {
-      setInstallPreview(result.data)
+    setPreparing(true)
+    setInstallProgress(null)
+    const unsubscribe = window.api.addons.onInstallProgress((data) => {
+      setInstallProgress(data)
+    })
+    try {
+      const result = await window.api.addons.install()
+      if (result.ok && result.data) {
+        setInstallPreview(result.data)
+      }
+    } finally {
+      unsubscribe()
+      setPreparing(false)
+      setInstallProgress(null)
     }
   }
 
@@ -551,6 +563,33 @@ export default function AddonsPage(): React.JSX.Element {
           </div>
         </div>
       </div>
+
+      {/* ── Preparing overlay (ZIP extraction) ── */}
+      {preparing && installProgress && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-sm rounded-2xl border border-rs-border bg-rs-panel p-6 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <RefreshCw size={18} className="animate-spin text-rs-accent" />
+              <h2 className="text-base font-bold text-rs-text">Preparing Add-on</h2>
+            </div>
+            <p className="mt-2 text-xs text-rs-text-secondary">
+              Unpacking and validating the add-on package...
+            </p>
+            <div className="mt-4">
+              <div className="mb-1.5 flex items-center justify-between text-xs">
+                <span className="text-rs-text-secondary">{installProgress.phase}</span>
+                <span className="font-medium text-rs-text">{installProgress.percent}%</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-rs-panel-light">
+                <div
+                  className="h-full rounded-full bg-rs-accent transition-all duration-200"
+                  style={{ width: `${installProgress.percent}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Install confirmation dialog ── */}
       {installPreview && (
