@@ -29,6 +29,7 @@ retrosync/
 │   │   ├── platforms.ts        # Device profiles & platform definitions
 │   │   ├── library.ts          # Library management (add/remove games)
 │   │   ├── imageCache.ts       # IGDB cover image caching
+│   │   ├── fs-utils.ts         # Shared async filesystem helpers
 │   │   ├── db/                 # Database setup & schema
 │   │   │   ├── index.ts        # SQLite initialization (WAL mode)
 │   │   │   └── schema.ts       # Drizzle table definitions

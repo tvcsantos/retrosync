@@ -22,6 +22,7 @@ An addon is a directory containing at minimum:
 my-addon/
 ├── manifest.json     # Addon metadata and capabilities
 ├── index.js          # Entry point (CommonJS module)
+├── node_modules/     # Optional: runtime deps loaded via hostImport()
 └── migrations/       # Optional: Drizzle SQL migrations
     └── 0000_initial.sql
 ```
@@ -392,6 +393,7 @@ await build({
   "private": true,
   "scripts": {
     "build": "node build.mjs",
+    "pack": "node pack.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -409,7 +411,36 @@ await build({
 
 ## Installation
 
-Users install addons by placing the addon directory in:
+### From the UI
+
+RetroSync supports installing addons from the Addons page. Click **Install Addon** and select either:
+
+- A **`.zip` file** containing the addon (recommended for distribution)
+- An **addon folder** containing `manifest.json`
+
+The app validates the manifest, shows a confirmation dialog, and copies the addon into the addons directory. ZIP files are automatically extracted — both flat zips (manifest at root) and zips with a single wrapper directory are supported.
+
+### Distributing as a ZIP
+
+If your addon includes a `pack.mjs` script (recommended), build and package in one step:
+
+```bash
+npm run pack
+```
+
+This builds the addon, installs production-only `node_modules` in a temp directory, and creates a zip named `{id}-addon-{version}.zip`.
+
+If you prefer to package manually:
+
+```bash
+zip -r my-addon.zip manifest.json index.js node_modules/ migrations/
+```
+
+The zip must contain `manifest.json` and the entry point file. Include `node_modules/` if your addon uses `hostImport()` for runtime dependencies that are not in the host app.
+
+### Manual installation
+
+You can also manually place the addon directory in:
 
 ```text
 {userData}/addons/{addon-id}/
@@ -420,10 +451,6 @@ Where `{userData}` is:
 - **macOS:** `~/Library/Application Support/retrosync/`
 - **Windows:** `%APPDATA%/retrosync/`
 - **Linux:** `~/.config/retrosync/`
-
-The addon must contain at least `manifest.json` and the entry point file.
-
-RetroSync also supports installing addons from the UI via the Addons page, which copies the addon directory and auto-enables it.
 
 ## Debugging
 

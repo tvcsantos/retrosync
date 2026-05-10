@@ -3,7 +3,7 @@
 // them in parallel, and exposes a single API surface for the IPC layer.
 
 import { join } from 'path'
-import { existsSync, rmSync, mkdirSync, cpSync } from 'fs'
+import { rm, mkdir, cp } from 'fs/promises'
 import log from 'electron-log/main'
 import type {
   Addon,
@@ -16,6 +16,7 @@ import type {
 import { getConfig, setConfig } from '../config'
 import { getActivePlatformIds } from '../platforms'
 import { discoverAndLoadAddons, getAddonsDir, loadAddonFromDir, readManifest } from './loader'
+import { exists } from '../fs-utils'
 
 const regLog = log.scope('addon-registry')
 
@@ -81,11 +82,11 @@ class AddonRegistry {
 
     // Copy to addons directory
     const destDir = join(getAddonsDir(), addonId)
-    if (existsSync(destDir)) {
-      rmSync(destDir, { recursive: true, force: true })
+    if (await exists(destDir)) {
+      await rm(destDir, { recursive: true, force: true })
     }
-    mkdirSync(destDir, { recursive: true })
-    cpSync(sourcePath, destDir, { recursive: true })
+    await mkdir(destDir, { recursive: true })
+    await cp(sourcePath, destDir, { recursive: true })
 
     // Load and register
     const addon = await loadAddonFromDir(destDir)
@@ -122,8 +123,8 @@ class AddonRegistry {
 
     // Delete from disk
     const addonDir = join(getAddonsDir(), addonId)
-    if (existsSync(addonDir)) {
-      rmSync(addonDir, { recursive: true, force: true })
+    if (await exists(addonDir)) {
+      await rm(addonDir, { recursive: true, force: true })
     }
 
     regLog.info('Uninstalled addon:', addonId)

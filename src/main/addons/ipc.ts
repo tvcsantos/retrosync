@@ -2,13 +2,72 @@
 // All addon:* IPC channels are registered here.
 
 import { ipcMain, dialog, BrowserWindow } from 'electron'
-import { existsSync } from 'fs'
+import { stat, rm } from 'fs/promises'
 import { join } from 'path'
+import { tmpdir } from 'os'
+import { randomUUID } from 'crypto'
+import AdmZip from 'adm-zip'
 import log from 'electron-log/main'
 import { addonRegistry } from './registry'
 import { readManifest } from './loader'
+import { exists } from '../fs-utils'
 
 const ipcLog = log.scope('ipc')
+
+/** Track temp directories so we can clean up after install confirm/cancel. */
+let pendingTempDir: string | null = null
+
+/**
+ * Extract a .zip addon to a temp directory and return the path containing
+ * manifest.json. Uses async extraction so the main process event loop stays
+ * responsive for large zips.
+ *
+ * Handles both flat zips (manifest at root) and zips with a single wrapper
+ * directory.
+ */
+async function extractAddonZip(zipPath: string): Promise<string> {
+  const zip = new AdmZip(zipPath)
+  const tempDir = join(tmpdir(), `retrosync-addon-${randomUUID()}`)
+  // extractAllToAsync returns a Promise when called without a callback,
+  // but @types/adm-zip types the return as void.
+  await (zip.extractAllToAsync(tempDir, true) as unknown as Promise<void>)
+
+  // Check if manifest.json is at the root of the extracted content
+  if (await exists(join(tempDir, 'manifest.json'))) {
+    return tempDir
+  }
+
+  // Check if there's a single subdirectory that contains manifest.json
+  const entries = zip.getEntries()
+  const topLevelDirs = new Set<string>()
+  for (const entry of entries) {
+    const firstSegment = entry.entryName.split('/')[0]
+    topLevelDirs.add(firstSegment)
+  }
+
+  if (topLevelDirs.size === 1) {
+    const nested = join(tempDir, [...topLevelDirs][0])
+    const info = await stat(nested).catch(() => null)
+    if (info?.isDirectory() && (await exists(join(nested, 'manifest.json')))) {
+      return nested
+    }
+  }
+
+  // Clean up on failure
+  await rm(tempDir, { recursive: true, force: true })
+  throw new Error('ZIP does not contain a valid addon (manifest.json not found)')
+}
+
+/** Remove the pending temp directory if one exists. */
+async function cleanupTempDir(): Promise<void> {
+  if (pendingTempDir) {
+    const dir = pendingTempDir
+    pendingTempDir = null
+    await rm(dir, { recursive: true, force: true }).catch(() => {
+      // best-effort cleanup
+    })
+  }
+}
 
 export function registerAddonIpcHandlers(): void {
   // ── List all addons ──
@@ -100,34 +159,61 @@ export function registerAddonIpcHandlers(): void {
     return addonRegistry.getCacheSize(addonId)
   })
 
-  // ── Install addon from disk (opens file dialog, user selects folder) ──
+  // ── Install addon from disk (opens file dialog, user selects folder or zip) ──
   ipcMain.handle('addon:install', async () => {
-    ipcLog.info('addon:install → opening folder dialog')
+    ipcLog.info('addon:install → opening file dialog')
     const win = BrowserWindow.getFocusedWindow()
+
+    // Clean up any leftover temp dir from a previous cancelled install
+    await cleanupTempDir()
+
     const result = await dialog.showOpenDialog(win!, {
-      title: 'Select Addon Folder',
-      properties: ['openDirectory'],
-      message: 'Select the addon folder containing manifest.json'
+      title: 'Select Addon Folder or ZIP',
+      properties: ['openFile', 'openDirectory'],
+      filters: [{ name: 'Addon ZIP', extensions: ['zip'] }],
+      message: 'Select an addon folder or .zip file containing manifest.json'
     })
 
     if (result.canceled || result.filePaths.length === 0) {
       return { ok: false, error: 'cancelled' }
     }
 
-    const sourcePath = result.filePaths[0]
-    ipcLog.info('addon:install → selected path:', sourcePath)
-
-    // Validate manifest exists before proceeding
-    if (!existsSync(join(sourcePath, 'manifest.json'))) {
-      return { ok: false, error: 'Selected folder does not contain a manifest.json' }
-    }
+    const selectedPath = result.filePaths[0]
+    ipcLog.info('addon:install → selected path:', selectedPath)
 
     try {
+      let addonPath: string
+
+      // Determine if the selection is a zip file or a directory
+      const info = await stat(selectedPath)
+      if (info.isFile() && selectedPath.toLowerCase().endsWith('.zip')) {
+        ipcLog.info('addon:install → extracting zip')
+        addonPath = await extractAddonZip(selectedPath)
+        // Track the temp root so we can clean up later (addonPath may be a
+        // nested subdirectory inside the temp dir)
+        const tempRoot = addonPath.startsWith(tmpdir()) ? addonPath : null
+        if (tempRoot) {
+          // If addonPath is a nested dir, track the actual temp root
+          const relative = addonPath.slice(tmpdir().length + 1)
+          const topDir = relative.split('/')[0].split('\\')[0]
+          pendingTempDir = join(tmpdir(), topDir)
+        }
+      } else {
+        addonPath = selectedPath
+      }
+
+      // Validate manifest exists
+      if (!(await exists(join(addonPath, 'manifest.json')))) {
+        await cleanupTempDir()
+        return { ok: false, error: 'Selected source does not contain a manifest.json' }
+      }
+
       // Read manifest for preview (returned to renderer for confirmation)
-      const manifest = readManifest(sourcePath)
-      return { ok: true, data: { manifest, sourcePath } }
+      const manifest = readManifest(addonPath)
+      return { ok: true, data: { manifest, sourcePath: addonPath } }
     } catch (error) {
-      ipcLog.error('addon:install → manifest validation failed:', error)
+      ipcLog.error('addon:install → validation failed:', error)
+      await cleanupTempDir()
       return { ok: false, error: String(error) }
     }
   })
@@ -142,6 +228,8 @@ export function registerAddonIpcHandlers(): void {
     } catch (error) {
       ipcLog.error('addon:install-confirm → ERROR:', error)
       return { ok: false, error: String(error) }
+    } finally {
+      await cleanupTempDir()
     }
   })
 
