@@ -4,6 +4,7 @@ import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms'
 
 export default withMermaid(
   defineConfig({
+    base: process.env.BASE_URL || '/',
     title: 'RetroSync',
     description: 'A desktop app for managing retro game ROM libraries',
     vite: {
