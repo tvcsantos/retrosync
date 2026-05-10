@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <div class="changelog">
 
-## Unreleased
-
 <div class="changelog-entry">
 
 ## <span class="changelog-version">0.1.0</span> <span class="changelog-date">2026-05-10</span>
