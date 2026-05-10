@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <div class="changelog-entry">
 
-## <span class="changelog-version">0.1.0</span> <span class="changelog-date">2025-05-10</span>
+## <span class="changelog-version">0.1.0</span> <span class="changelog-date">2026-05-10</span>
 
 ### Added {.changelog-category .changelog-added}
+
+**Core**
 
 - IGDB integration for game search with metadata, cover art, and platform info
 - Extensible addon system with capability-based architecture (`sources:games`, `sources:bios`, `metadata`)
@@ -27,7 +29,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SQLite database with Drizzle ORM and WAL mode
 - IGDB cover image caching
 - Dark theme with retro gaming aesthetics
-- VitePress documentation site with architecture, contributing, and addon development guides
+
+**Documentation**
+
+- VitePress documentation site deployed to GitHub Pages
+- Architecture overview with Draw.io diagrams (process architecture, data flow, import queue, database schema)
+- Addon development guide with full API reference and examples
+- Contributing guide with project structure, code style, and verification steps
+- Changelog page with timeline-styled version history
+- Hero section with animated logo and gradient styling
+- Image lightbox support for documentation screenshots
+- LLM-optimized documentation via `vitepress-plugin-llms` (`llms.txt` and `llms-full.txt`)
+
+**Infrastructure**
+
+- GitHub Actions workflow for documentation deployment to GitHub Pages
+- GitHub Actions workflow for building and releasing Mac, Windows, and Linux installers
+- Isolated `docs/package.json` for lightweight documentation CI builds
+- Node 24 runtime requirement
+- Electron 41 desktop runtime
 
 </div>
 
