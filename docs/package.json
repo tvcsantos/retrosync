@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "name": "retrosync-docs",
+  "description": "RetroSync documentation site",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "lightbox3": "^1.1.0",
+    "mermaid": "^11.14.0",
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-llms": "^1.12.2",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  }
+}

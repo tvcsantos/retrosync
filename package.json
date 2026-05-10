@@ -23,9 +23,9 @@
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:dev": "npm run dev --prefix docs",
+    "docs:build": "npm run build --prefix docs",
+    "docs:preview": "npm run preview --prefix docs"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
@@ -61,15 +61,10 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
-    "lightbox3": "^1.1.0",
-    "mermaid": "^11.14.0",
     "prettier": "^3.7.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "typescript": "^6.0.3",
-    "vite": "^7.2.6",
-    "vitepress": "^1.6.4",
-    "vitepress-plugin-llms": "^1.12.2",
-    "vitepress-plugin-mermaid": "^2.0.17"
+    "vite": "^7.2.6"
   }
 }
