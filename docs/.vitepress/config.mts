@@ -2,7 +2,8 @@ import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms'
 
-const base = process.env.BASE_URL || '/'
+const rawBase = process.env.BASE_URL || '/'
+const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`
 
 export default withMermaid(
   defineConfig({
