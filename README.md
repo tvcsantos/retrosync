@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD041 -->
 
-![retrosync](docs/assets/images/retrosync.png)
+![retrosync](docs/public/assets/images/retrosync.png)
 
 <!-- markdownlint-enable MD041 -->
 
@@ -19,9 +19,9 @@ A desktop app for managing retro game ROM libraries. Search games via IGDB, disc
 
 ## Showcase
 
-![Home Page](docs/assets/images/01-home-page.png)
+![Home Page](docs/public/assets/images/01-home-page.png)
 
-![Game Details](docs/assets/images/02-game-details.png)
+![Game Details](docs/public/assets/images/02-game-details.png)
 
 ## Quick Start
 
@@ -37,7 +37,7 @@ npm run dev
 ```bash
 npm run build:mac      # macOS DMG
 npm run build:win      # Windows installer
-npm run build:linux    # Linux packages (AppImage, deb, snap)
+npm run build:linux    # Linux packages (AppImage, deb)
 ```
 
 ## Documentation

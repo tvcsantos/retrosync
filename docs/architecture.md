@@ -23,7 +23,7 @@ The app is built with **Electron** (main + renderer processes), **React 19** for
 | Icons            | lucide-react            | Tree-shakeable, consistent icon set                                |
 | Fuzzy search     | Fuse.js                 | Client-side fuzzy matching for ROM name normalization              |
 | Logging          | electron-log            | Scoped logging for main/renderer/addon processes                   |
-| Packaging        | electron-builder        | Cross-platform installers (NSIS, DMG, AppImage, deb, snap)         |
+| Packaging        | electron-builder        | Cross-platform installers (NSIS, DMG, AppImage, deb)         |
 
 ## Process Architecture
 
