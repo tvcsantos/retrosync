@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **Node.js** 24+
-- **npm** 9+
+- **npm** 10+
 - **Git**
 
 ## Setup

@@ -343,7 +343,7 @@ Create a `tsconfig.json`:
 ```json
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
