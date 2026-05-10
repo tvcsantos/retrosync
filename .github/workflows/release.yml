@@ -15,16 +15,22 @@ jobs:
         include:
           - os: ubuntu-latest
             build-cmd: npm run build:linux
+            name: Linux
           - os: windows-latest
             build-cmd: npm run build:win
+            name: Windows
           - os: macos-latest
             arch: arm64
             build-cmd: npm run build:mac -- --arm64
+            name: macOS (ARM)
           - os: macos-latest
             arch: x64
             build-cmd: npm run build:mac -- --x64
+            name: macOS (x64)
 
     runs-on: ${{ matrix.os }}
+
+    name: Build and package for ${{ matrix.name }}
 
     steps:
       - name: Checkout
@@ -53,7 +59,6 @@ jobs:
             dist/*.zip
             dist/*.exe
             dist/*.AppImage
-            dist/*.snap
             dist/*.deb
           if-no-files-found: ignore
 
