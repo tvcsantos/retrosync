@@ -25,6 +25,13 @@ A desktop app for managing retro game ROM libraries. Search games via IGDB, disc
 
 Download the latest release for your platform from the [Releases page](https://github.com/tvcsantos/retrosync/releases/latest), or visit the [Get Started](https://tvcsantos.github.io/retrosync/get-started) guide for per-platform download cards and setup instructions.
 
+### Homebrew (macOS)
+
+```sh
+brew tap tvcsantos/retrosync
+brew install --cask retrosync
+```
+
 ## Showcase
 
 ![Home Page](docs/public/assets/images/01-home-page.png)

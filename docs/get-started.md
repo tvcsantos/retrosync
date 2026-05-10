@@ -43,18 +43,27 @@ Configure your devices, manage addons, set library paths, and customize the app 
 
 <DownloadCards />
 
+### Installing on macOS
+
 > [!IMPORTANT]
-> **macOS: "RetroSync is damaged and can't be opened"**
+> **"RetroSync is damaged and can't be opened"**
 >
-> Because the app is not yet notarized with Apple, macOS Gatekeeper may block it after download.
->
-> To fix this, open **Terminal** and run:
+> Because the app is not yet notarized with Apple, macOS Gatekeeper may block it after download. To fix this, open **Terminal** and run:
 >
 > ```sh
 > xattr -cr /Applications/RetroSync.app
 > ```
 >
 > Then open the app normally. You only need to do this once.
+
+#### Homebrew
+
+Alternatively, you can install RetroSync via [Homebrew](https://brew.sh/) which handles the Gatekeeper issue automatically:
+
+```sh
+brew tap tvcsantos/retrosync
+brew install --cask retrosync
+```
 
 ### System Requirements
 

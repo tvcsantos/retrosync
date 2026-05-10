@@ -83,3 +83,11 @@ jobs:
           files: artifacts/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Homebrew tap
+        if: success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          repository: tvcsantos/homebrew-retrosync
+          event-type: release-published
