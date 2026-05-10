@@ -3,7 +3,7 @@
 // them in parallel, and exposes a single API surface for the IPC layer.
 
 import { join } from 'path'
-import { rm, mkdir, cp } from 'fs/promises'
+import { rm, mkdir, copyFile, readdir } from 'fs/promises'
 import log from 'electron-log/main'
 import type {
   Addon,
@@ -19,6 +19,51 @@ import { discoverAndLoadAddons, getAddonsDir, loadAddonFromDir, readManifest } f
 import { exists } from '../fs-utils'
 
 const regLog = log.scope('addon-registry')
+
+/** Count total files in a directory tree. */
+async function countFiles(dir: string): Promise<number> {
+  let count = 0
+  const entries = await readdir(dir, { withFileTypes: true })
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      count += await countFiles(join(dir, entry.name))
+    } else {
+      count++
+    }
+  }
+  return count
+}
+
+/**
+ * Recursively copy a directory with per-file progress reporting.
+ * Calls `onProgress(copiedSoFar, totalFiles)` after each file.
+ */
+async function copyWithProgress(
+  src: string,
+  dest: string,
+  totalFiles: number,
+  onProgress?: (copied: number, total: number) => void
+): Promise<void> {
+  let copied = 0
+
+  async function walk(srcDir: string, destDir: string): Promise<void> {
+    await mkdir(destDir, { recursive: true })
+    const entries = await readdir(srcDir, { withFileTypes: true })
+    for (const entry of entries) {
+      const srcPath = join(srcDir, entry.name)
+      const destPath = join(destDir, entry.name)
+      if (entry.isDirectory()) {
+        await walk(srcPath, destPath)
+      } else {
+        await copyFile(srcPath, destPath)
+        copied++
+        onProgress?.(copied, totalFiles)
+      }
+    }
+  }
+
+  await walk(src, dest)
+}
 
 interface RegisteredAddon {
   addon: Addon
@@ -64,8 +109,14 @@ class AddonRegistry {
    * Install an addon from a source path (directory or extracted zip).
    * Copies the addon into {userData}/addons/{id}/, loads and registers it.
    * Returns the addon manifest on success.
+   *
+   * @param onCopyProgress Optional callback invoked with (copiedFiles, totalFiles)
+   *        during the file copy phase.
    */
-  async installFromPath(sourcePath: string): Promise<AddonManifest> {
+  async installFromPath(
+    sourcePath: string,
+    onCopyProgress?: (copied: number, total: number) => void
+  ): Promise<AddonManifest> {
     // Validate the manifest before copying
     const manifest = readManifest(sourcePath)
     const addonId = manifest.id
@@ -85,8 +136,8 @@ class AddonRegistry {
     if (await exists(destDir)) {
       await rm(destDir, { recursive: true, force: true })
     }
-    await mkdir(destDir, { recursive: true })
-    await cp(sourcePath, destDir, { recursive: true })
+    const totalFiles = await countFiles(sourcePath)
+    await copyWithProgress(sourcePath, destDir, totalFiles, onCopyProgress)
 
     // Load and register
     const addon = await loadAddonFromDir(destDir)

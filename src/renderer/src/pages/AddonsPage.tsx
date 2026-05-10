@@ -62,6 +62,10 @@ export default function AddonsPage(): React.JSX.Element {
     sourcePath: string
   } | null>(null)
   const [installing, setInstalling] = useState(false)
+  const [installProgress, setInstallProgress] = useState<{
+    phase: string
+    percent: number
+  } | null>(null)
   const [uninstalling, setUninstalling] = useState<string | null>(null)
 
   const loadAddons = useCallback(async () => {
@@ -120,6 +124,10 @@ export default function AddonsPage(): React.JSX.Element {
   const handleInstallConfirm = async (): Promise<void> => {
     if (!installPreview) return
     setInstalling(true)
+    setInstallProgress(null)
+    const unsubscribe = window.api.addons.onInstallProgress((data) => {
+      setInstallProgress(data)
+    })
     try {
       await window.api.addons.installConfirm(installPreview.sourcePath)
       setInstallPreview(null)
@@ -127,7 +135,9 @@ export default function AddonsPage(): React.JSX.Element {
     } catch {
       // Error handled by IPC
     } finally {
+      unsubscribe()
       setInstalling(false)
+      setInstallProgress(null)
     }
   }
 
@@ -584,11 +594,27 @@ export default function AddonsPage(): React.JSX.Element {
               </p>
             </div>
 
+            {installing && installProgress && (
+              <div className="mt-4">
+                <div className="mb-1.5 flex items-center justify-between text-xs">
+                  <span className="text-rs-text-secondary">{installProgress.phase}</span>
+                  <span className="font-medium text-rs-text">{installProgress.percent}%</span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-rs-panel-light">
+                  <div
+                    className="h-full rounded-full bg-rs-accent transition-all duration-200"
+                    style={{ width: `${installProgress.percent}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="mt-5 flex items-center justify-end gap-3">
               <button
                 type="button"
+                disabled={installing}
                 onClick={() => setInstallPreview(null)}
-                className="rounded-lg border border-rs-border px-4 py-2 text-sm font-medium text-rs-text-secondary transition-colors hover:bg-rs-panel-light"
+                className="rounded-lg border border-rs-border px-4 py-2 text-sm font-medium text-rs-text-secondary transition-colors hover:bg-rs-panel-light disabled:opacity-40"
               >
                 Cancel
               </button>

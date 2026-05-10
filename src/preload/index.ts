@@ -46,7 +46,14 @@ const api = {
     install: () => ipcRenderer.invoke('addon:install'),
     installConfirm: (sourcePath: string) => ipcRenderer.invoke('addon:install-confirm', sourcePath),
     uninstall: (addonId: string) => ipcRenderer.invoke('addon:uninstall', addonId),
-    selectFolder: () => ipcRenderer.invoke('addon:select-folder')
+    selectFolder: () => ipcRenderer.invoke('addon:select-folder'),
+    onInstallProgress: (callback: (data: unknown) => void) => {
+      const handler = (_event: unknown, data: unknown): void => callback(data)
+      ipcRenderer.on('addon:install-progress', handler)
+      return () => {
+        ipcRenderer.removeListener('addon:install-progress', handler)
+      }
+    }
   },
   imports: {
     start: (params: Record<string, unknown>) => ipcRenderer.invoke('imports:start', params),

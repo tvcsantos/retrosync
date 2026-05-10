@@ -150,6 +150,11 @@ interface AddonSourcesResultShape {
   results: SourceSearchResultShape
 }
 
+interface InstallProgressEventShape {
+  phase: string
+  percent: number
+}
+
 interface AddonsApi {
   list: () => Promise<AddonInfoShape[]>
   findSources: (
@@ -171,6 +176,7 @@ interface AddonsApi {
   installConfirm: (sourcePath: string) => Promise<IpcResult<AddonManifestShape>>
   uninstall: (addonId: string) => Promise<{ ok: boolean; error?: string }>
   selectFolder: () => Promise<string | null>
+  onInstallProgress: (callback: (data: InstallProgressEventShape) => void) => () => void
 }
 
 // ---------- Import types ----------

@@ -14,6 +14,14 @@ import { exists } from '../fs-utils'
 
 const ipcLog = log.scope('ipc')
 
+/** Send addon install progress to the focused renderer window. */
+function sendInstallProgress(phase: string, percent: number): void {
+  const win = BrowserWindow.getFocusedWindow()
+  if (win) {
+    win.webContents.send('addon:install-progress', { phase, percent })
+  }
+}
+
 /** Track temp directories so we can clean up after install confirm/cancel. */
 let pendingTempDir: string | null = null
 
@@ -188,7 +196,9 @@ export function registerAddonIpcHandlers(): void {
       const info = await stat(selectedPath)
       if (info.isFile() && selectedPath.toLowerCase().endsWith('.zip')) {
         ipcLog.info('addon:install → extracting zip')
+        sendInstallProgress('Extracting addon...', 0)
         addonPath = await extractAddonZip(selectedPath)
+        sendInstallProgress('Validating addon...', 30)
         // Track the temp root so we can clean up later (addonPath may be a
         // nested subdirectory inside the temp dir)
         const tempRoot = addonPath.startsWith(tmpdir()) ? addonPath : null
@@ -222,7 +232,16 @@ export function registerAddonIpcHandlers(): void {
   ipcMain.handle('addon:install-confirm', async (_event, sourcePath: string) => {
     ipcLog.info('addon:install-confirm → installing from:', sourcePath)
     try {
-      const manifest = await addonRegistry.installFromPath(sourcePath)
+      sendInstallProgress('Copying files...', 35)
+      const manifest = await addonRegistry.installFromPath(sourcePath, (copied, total) => {
+        // Map copy progress to 35-90% range
+        const percent = 35 + Math.round((copied / total) * 55)
+        sendInstallProgress('Copying files...', percent)
+      })
+      sendInstallProgress('Loading addon...', 90)
+      // Small delay so the renderer can paint the 90% state
+      await new Promise((r) => setTimeout(r, 50))
+      sendInstallProgress('Done', 100)
       ipcLog.info('addon:install-confirm → installed:', manifest.id, 'v' + manifest.version)
       return { ok: true, data: manifest }
     } catch (error) {
