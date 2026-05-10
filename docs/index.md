@@ -36,3 +36,12 @@ features:
     title: BIOS Management
     details: Manages BIOS and install firmware files for each platform.
 ---
+
+## Why RetroSync?
+
+- **🔎 The Problem** — ROMs scattered across sites, BIOS files hard to find, every handheld expects a different folder structure
+- **🧠 Smart Search** — Search by real game names through [IGDB](https://www.igdb.com/) with metadata, cover art, and platform info
+- **🔌 Extensible Sources** — Community-built addons handle where files come from, no hardcoded sources
+- **🎯 Device-Aware** — Pick your handhelds and only see what actually runs on your hardware
+- **📦 Automated Imports** — Queued downloads with progress tracking, pause/resume, and automatic file placement
+- **💻 One App, Everything** — Replaces the patchwork of tools and manual steps most retro gamers deal with today
