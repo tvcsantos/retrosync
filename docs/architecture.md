@@ -76,7 +76,7 @@ JSON-based stores would struggle with the index sizes and lack query capabilitie
 
 ### Why a shared database for addons?
 
-Addons get a Drizzle ORM instance and raw SQLite handle through their context. This means addons create their own tables in the same database file rather than managing separate databases.
+Addons get a Drizzle ORM instance through their context. This means addons create their own tables in the same database file rather than managing separate databases.
 
 **Trade-offs:**
 
@@ -158,7 +158,7 @@ Key behaviors:
 
 ### Addon Tables
 
-Addons create their own tables using the raw SQLite handle. For example, a source addon might create:
+Addons create their own tables via Drizzle SQL migrations run during `init()`. For example, a source addon might create:
 
 - An index table for discovered ROM entries (with platform, filename, size, region)
 - A status table tracking which collections have been indexed

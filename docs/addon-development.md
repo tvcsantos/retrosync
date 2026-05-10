@@ -89,7 +89,7 @@ module.exports.default = function createMyAddon(context) {
 
     async init() {
       log.info('My addon initialized')
-    }
+    },
 
     // ... implement capability methods
   }
@@ -128,7 +128,7 @@ interface AddonContext {
     debug(...args: unknown[]): void
   }
 
-  /** Import a module from the host app's node_modules. */
+  /** Dynamically import a module (addon node_modules first, then host). */
   hostImport(moduleId: string): Promise<unknown>
 }
 ```
@@ -155,13 +155,13 @@ async init() {
 
 ### Host Imports
 
-Use `context.hostImport(moduleId)` to dynamically import modules from the host app's `node_modules`. This avoids bundling heavy or native dependencies into your addon:
+Use `context.hostImport(moduleId)` to dynamically import modules at runtime without bundling them into your addon's `index.js`. It resolves from the **addon's own `node_modules` first**, then falls back to the host app's `node_modules`. This is useful for heavy or native dependencies that should stay out of your bundle:
 
 ```javascript
 const WebTorrent = await context.hostImport('webtorrent')
 ```
 
-Available host modules include `webtorrent`, `parse-torrent`, `fuse.js`, `axios`, `adm-zip`, and any other dependency in the host's `package.json`.
+List these as regular `dependencies` in your addon's `package.json` so they are installed in `node_modules/`. Because `hostImport` is a runtime call that the bundler cannot trace, the module is never pulled into your bundle.
 
 ## Implementing Capabilities
 
@@ -344,16 +344,16 @@ Create a `tsconfig.json`:
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
-    "outDir": ".",
+    "outDir": "dist",
     "rootDir": "src",
     "declaration": false,
     "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts"]
 }
 ```
 
@@ -381,7 +381,7 @@ await build({
 
 - Bundle format must be `cjs` (CommonJS)
 - Externalize host-provided native modules (`better-sqlite3`, `electron`, `electron-log`)
-- Use `hostImport()` for other host dependencies instead of bundling them
+- Use `hostImport()` for heavy or native dependencies that should not be bundled (see [Host Imports](#host-imports))
 
 ### Package.json
 

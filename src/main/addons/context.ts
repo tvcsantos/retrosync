@@ -33,9 +33,10 @@ export interface AddonContext {
   }
 
   /**
-   * Dynamically import a module from the host app's node_modules.
-   * Use this for heavy/native dependencies (e.g. webtorrent) that the host
-   * already ships rather than bundling them into the addon.
+   * Dynamically import a module at runtime.
+   * Resolves from the addon's own node_modules first, then falls back to
+   * the host app's node_modules. Useful for heavy or native dependencies
+   * that should not be bundled into the addon's index.js.
    */
   hostImport(moduleId: string): Promise<unknown>
 }
