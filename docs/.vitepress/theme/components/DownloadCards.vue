@@ -259,10 +259,20 @@ onMounted(async () => {
   color: #fff;
 }
 
+.dl-btn-primary:hover {
+  color: #fff;
+}
+
 .dl-btn-secondary {
   background: var(--vp-c-bg-mute);
   color: var(--vp-c-text-1);
   border: 1px solid var(--vp-c-divider);
+}
+
+.dl-btn-secondary:hover {
+  color: var(--vp-c-text-1);
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
 }
 
 .dl-version {
