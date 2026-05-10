@@ -25,6 +25,9 @@ function sendInstallProgress(phase: string, percent: number): void {
 /** Track temp directories so we can clean up after install confirm/cancel. */
 let pendingTempDir: string | null = null
 
+/** AbortController for the current install flow (preparation + copy). */
+let installAbort: AbortController | null = null
+
 /**
  * Extract a .zip addon to a temp directory and return the path containing
  * manifest.json. Uses async extraction so the main process event loop stays
@@ -172,10 +175,20 @@ export function registerAddonIpcHandlers(): void {
     return addonRegistry.getCacheSize(addonId)
   })
 
+  // ── Cancel a running addon install ──
+  ipcMain.handle('addon:install-cancel', async () => {
+    ipcLog.info('addon:install-cancel → aborting')
+    installAbort?.abort()
+    return { ok: true }
+  })
+
   // ── Install addon from disk (opens file dialog, user selects folder or zip) ──
   ipcMain.handle('addon:install', async () => {
     ipcLog.info('addon:install → opening file dialog')
     const win = BrowserWindow.getFocusedWindow()
+
+    // Fresh abort controller for this install flow
+    installAbort = new AbortController()
 
     // Clean up any leftover temp dir from a previous cancelled install
     await cleanupTempDir()
@@ -202,6 +215,13 @@ export function registerAddonIpcHandlers(): void {
       if (info.isFile() && selectedPath.toLowerCase().endsWith('.zip')) {
         ipcLog.info('addon:install → extracting zip')
         addonPath = await extractAddonZip(selectedPath, sendInstallProgress)
+
+        // Check for cancellation after extraction
+        if (installAbort.signal.aborted) {
+          await cleanupTempDir()
+          return { ok: false, error: 'cancelled' }
+        }
+
         sendInstallProgress('Validating addon...', 25)
         // Track the temp root so we can clean up later (addonPath may be a
         // nested subdirectory inside the temp dir)
@@ -235,13 +255,18 @@ export function registerAddonIpcHandlers(): void {
   // ── Confirm addon installation (after user accepts disclaimer) ──
   ipcMain.handle('addon:install-confirm', async (_event, sourcePath: string) => {
     ipcLog.info('addon:install-confirm → installing from:', sourcePath)
+    const signal = installAbort?.signal
     try {
       sendInstallProgress('Copying files...', 35)
-      const manifest = await addonRegistry.installFromPath(sourcePath, (copied, total) => {
-        // Map copy progress to 35-90% range
-        const percent = 35 + Math.round((copied / total) * 55)
-        sendInstallProgress('Copying files...', percent)
-      })
+      const manifest = await addonRegistry.installFromPath(
+        sourcePath,
+        (copied, total) => {
+          // Map copy progress to 35-90% range
+          const percent = 35 + Math.round((copied / total) * 55)
+          sendInstallProgress('Copying files...', percent)
+        },
+        signal
+      )
       sendInstallProgress('Loading addon...', 90)
       // Small delay so the renderer can paint the 90% state
       await new Promise((r) => setTimeout(r, 50))
@@ -249,8 +274,13 @@ export function registerAddonIpcHandlers(): void {
       ipcLog.info('addon:install-confirm → installed:', manifest.id, 'v' + manifest.version)
       return { ok: true, data: manifest }
     } catch (error) {
-      ipcLog.error('addon:install-confirm → ERROR:', error)
-      return { ok: false, error: String(error) }
+      const msg = String(error)
+      if (msg.includes('cancelled')) {
+        ipcLog.info('addon:install-confirm → cancelled by user')
+      } else {
+        ipcLog.error('addon:install-confirm → ERROR:', error)
+      }
+      return { ok: false, error: msg }
     } finally {
       await cleanupTempDir()
     }

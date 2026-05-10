@@ -45,6 +45,7 @@ const api = {
     cacheSize: (addonId: string) => ipcRenderer.invoke('addon:cache-size', addonId),
     install: () => ipcRenderer.invoke('addon:install'),
     installConfirm: (sourcePath: string) => ipcRenderer.invoke('addon:install-confirm', sourcePath),
+    cancelInstall: () => ipcRenderer.invoke('addon:install-cancel'),
     uninstall: (addonId: string) => ipcRenderer.invoke('addon:uninstall', addonId),
     selectFolder: () => ipcRenderer.invoke('addon:select-folder'),
     onInstallProgress: (callback: (data: unknown) => void) => {

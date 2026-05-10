@@ -174,6 +174,7 @@ interface AddonsApi {
   cacheSize: (addonId: string) => Promise<{ files: number; bytes: number } | null>
   install: () => Promise<IpcResult<{ manifest: AddonManifestShape; sourcePath: string }>>
   installConfirm: (sourcePath: string) => Promise<IpcResult<AddonManifestShape>>
+  cancelInstall: () => Promise<{ ok: boolean }>
   uninstall: (addonId: string) => Promise<{ ok: boolean; error?: string }>
   selectFolder: () => Promise<string | null>
   onInstallProgress: (callback: (data: InstallProgressEventShape) => void) => () => void

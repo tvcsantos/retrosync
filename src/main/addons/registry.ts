@@ -37,12 +37,15 @@ async function countFiles(dir: string): Promise<number> {
 /**
  * Recursively copy a directory with per-file progress reporting.
  * Calls `onProgress(copiedSoFar, totalFiles)` after each file.
+ * If `signal` is provided, checks it before each file copy and throws
+ * on abort so partially-copied trees can be cleaned up by the caller.
  */
 async function copyWithProgress(
   src: string,
   dest: string,
   totalFiles: number,
-  onProgress?: (copied: number, total: number) => void
+  onProgress?: (copied: number, total: number) => void,
+  signal?: AbortSignal
 ): Promise<void> {
   let copied = 0
 
@@ -50,6 +53,7 @@ async function copyWithProgress(
     await mkdir(destDir, { recursive: true })
     const entries = await readdir(srcDir, { withFileTypes: true })
     for (const entry of entries) {
+      if (signal?.aborted) throw new Error('Installation cancelled')
       const srcPath = join(srcDir, entry.name)
       const destPath = join(destDir, entry.name)
       if (entry.isDirectory()) {
@@ -112,10 +116,13 @@ class AddonRegistry {
    *
    * @param onCopyProgress Optional callback invoked with (copiedFiles, totalFiles)
    *        during the file copy phase.
+   * @param signal Optional AbortSignal to support cancellation. When aborted the
+   *        partially-copied destination directory is removed and an error is thrown.
    */
   async installFromPath(
     sourcePath: string,
-    onCopyProgress?: (copied: number, total: number) => void
+    onCopyProgress?: (copied: number, total: number) => void,
+    signal?: AbortSignal
   ): Promise<AddonManifest> {
     // Validate the manifest before copying
     const manifest = readManifest(sourcePath)
@@ -137,7 +144,13 @@ class AddonRegistry {
       await rm(destDir, { recursive: true, force: true })
     }
     const totalFiles = await countFiles(sourcePath)
-    await copyWithProgress(sourcePath, destDir, totalFiles, onCopyProgress)
+    try {
+      await copyWithProgress(sourcePath, destDir, totalFiles, onCopyProgress, signal)
+    } catch (err) {
+      // Clean up partially-copied destination on any failure (including cancel)
+      await rm(destDir, { recursive: true, force: true }).catch(() => {})
+      throw err
+    }
 
     // Load and register
     const addon = await loadAddonFromDir(destDir)

@@ -153,6 +153,13 @@ export default function AddonsPage(): React.JSX.Element {
     }
   }
 
+  const handleCancelInstall = async (): Promise<void> => {
+    await window.api.addons.cancelInstall()
+    // The in-flight install/installConfirm call will resolve with
+    // { ok: false, error: 'cancelled' } and the finally blocks will
+    // clean up UI state automatically.
+  }
+
   const handleUninstall = async (addonId: string): Promise<void> => {
     setUninstalling(addonId)
     try {
@@ -587,6 +594,15 @@ export default function AddonsPage(): React.JSX.Element {
                 />
               </div>
             </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={handleCancelInstall}
+                className="rounded-lg border border-rs-border px-4 py-2 text-sm font-medium text-rs-text-secondary transition-colors hover:bg-rs-panel-light"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -651,27 +667,26 @@ export default function AddonsPage(): React.JSX.Element {
             <div className="mt-5 flex items-center justify-end gap-3">
               <button
                 type="button"
-                disabled={installing}
-                onClick={() => setInstallPreview(null)}
-                className="rounded-lg border border-rs-border px-4 py-2 text-sm font-medium text-rs-text-secondary transition-colors hover:bg-rs-panel-light disabled:opacity-40"
+                onClick={installing ? handleCancelInstall : () => setInstallPreview(null)}
+                className="rounded-lg border border-rs-border px-4 py-2 text-sm font-medium text-rs-text-secondary transition-colors hover:bg-rs-panel-light"
               >
                 Cancel
               </button>
-              <button
-                type="button"
-                disabled={installing}
-                onClick={handleInstallConfirm}
-                className="flex items-center gap-2 rounded-lg bg-rs-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rs-accent-hover disabled:opacity-60"
-              >
-                {installing ? (
-                  <>
-                    <RefreshCw size={14} className="animate-spin" />
-                    Installing...
-                  </>
-                ) : (
-                  'Install'
-                )}
-              </button>
+              {!installing && (
+                <button
+                  type="button"
+                  onClick={handleInstallConfirm}
+                  className="flex items-center gap-2 rounded-lg bg-rs-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rs-accent-hover"
+                >
+                  Install
+                </button>
+              )}
+              {installing && (
+                <span className="flex items-center gap-2 rounded-lg bg-rs-accent/60 px-4 py-2 text-sm font-semibold text-white">
+                  <RefreshCw size={14} className="animate-spin" />
+                  Installing...
+                </span>
+              )}
             </div>
           </div>
         </div>
