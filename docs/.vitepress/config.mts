@@ -2,12 +2,14 @@ import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms'
 
+const base = process.env.BASE_URL || '/'
+
 export default withMermaid(
   defineConfig({
-    base: process.env.BASE_URL || '/',
+    base,
     title: 'RetroSync',
     description: 'A desktop app for managing retro game ROM libraries',
-    head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
+    head: [['link', { rel: 'icon', href: `${base}favicon.ico` }]],
     vite: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       plugins: [llmstxt() as any]
