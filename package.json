@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "Tiago Santos",
   "homepage": "https://electron-vite.org",
   "engines": {
     "node": ">=24"
