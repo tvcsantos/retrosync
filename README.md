@@ -6,9 +6,9 @@
 
 # RetroSync
 
-[![GitHub Release](https://img.shields.io/github/v/release/tvcsantos/retrosync?style=flat&label=Latest%20Release)](https://github.com/tvcsantos/retrosync/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/tvcsantos/retrosync/total?style=flat&label=Downloads)](https://github.com/tvcsantos/retrosync/releases/latest)
-[![License](https://img.shields.io/github/license/tvcsantos/retrosync?style=flat)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/tvcsantos/retrosync?label=Latest%20Release)](https://github.com/tvcsantos/retrosync/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/tvcsantos/retrosync/total?label=Downloads)](https://github.com/tvcsantos/retrosync/releases/latest)
+[![License](https://img.shields.io/github/license/tvcsantos/retrosync)](LICENSE)
 
 A desktop app for managing retro game ROM libraries. Search games via IGDB, discover ROMs through extensible addon sources, and organize your collection by platform and device.
 
