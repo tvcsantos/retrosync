@@ -13,5 +13,9 @@
     "vitepress": "^1.6.4",
     "vitepress-plugin-llms": "^1.12.2",
     "vitepress-plugin-mermaid": "^2.0.17"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "fsevents@2.3.3": true
   }
 }
